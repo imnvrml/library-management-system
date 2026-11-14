@@ -1,0 +1,22 @@
+@startuml state-reservation
+' Supporting state machine: Reservation
+skinparam shadowing false
+hide empty description
+
+state Waiting
+state "Ready for pickup" as Ready
+state Fulfilled
+state Expired
+state Cancelled
+
+[*] --> Waiting : place reservation\n[FR-13]
+Waiting --> Ready : first in queue and a copy is returned,\nadded, or passed on from an expired hold\n/ copy On hold, pickupDeadline = today + 3 days\n[FR-14, FR-04 AC3, FR-15 AC2]
+Ready --> Fulfilled : member borrows the held copy\n[FR-09 AC6, FR-14 AC2]
+Ready --> Expired : today > pickupDeadline\n[FR-15]
+Waiting --> Cancelled : cancel\n[FR-16]
+Ready --> Cancelled : cancel / held copy passed on\n[FR-16]
+
+Fulfilled --> [*]
+Expired --> [*]
+Cancelled --> [*]
+@enduml

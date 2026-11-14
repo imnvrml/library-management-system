@@ -1,0 +1,28 @@
+@startuml state-copy
+' State machine of the most important entity: Copy
+skinparam shadowing false
+hide empty description
+
+state Available
+state "On loan" as OnLoan
+state "On hold" as OnHold
+state Withdrawn
+state Lost
+
+[*] --> Available : add copy, no Waiting reservation\n[FR-04 AC1]
+[*] --> OnHold : add copy, Waiting reservation exists\n[FR-04 AC3, FR-14]
+
+Available --> OnLoan : check out to eligible member\n[FR-09]
+OnLoan --> Available : return, no Waiting reservation\n[FR-10 AC1]
+OnLoan --> OnHold : return, Waiting reservation exists\n[FR-10 AC2, FR-14]
+
+OnHold --> OnLoan : check out to the member it is held for\n[FR-09 AC6, FR-14 AC2]
+OnHold --> OnHold : hold expired or cancelled,\nnext Waiting reservation exists\n[FR-15 AC2, FR-16]
+OnHold --> Available : hold expired or cancelled,\nqueue empty\n[FR-15 AC1, FR-16]
+
+Available --> Withdrawn : withdraw\n[FR-05]
+OnLoan --> Lost : mark as lost\n[FR-21, Could]
+
+Withdrawn --> [*]
+Lost --> [*]
+@enduml
