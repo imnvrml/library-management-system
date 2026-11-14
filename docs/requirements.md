@@ -269,7 +269,7 @@ configuration module in the code so that the library manager can change them wit
 | BR-09 | A copy On hold can only be checked out to the member it is held for | — |
 | BR-10 | Maximum active reservations (Waiting or Ready for pickup) per member | 3 |
 | BR-11 | ISBN format: 13 digits after removing hyphens and spaces; check digit valid (weights 1 and 3 alternating, weighted sum divisible by 10) | — |
-| BR-12 | Allowed publication year | 1450 to the current year |
+| BR-12 | Allowed publication year **of this edition** (not of the original work) | 1800 to the current year |
 | BR-13 | Minimum password length | 8 characters |
 | BR-14 | Money is stored and calculated as whole qəpik (integers) and shown as AZN with 2 decimals | — |
 
