@@ -5,6 +5,7 @@ autonumber
 actor Member
 boundary ":reservations_bp" as bp
 control ":ReservationService" as res
+control ":EligibilityPolicy" as pol
 entity ":CopyRepository" as copies
 entity ":LoanRepository" as loans
 entity ":ReservationRepository" as rrepo
@@ -19,7 +20,8 @@ res -> res : expire_holds()
 res -> copies : count_available(title_id)
 res -> rrepo : active_of(member_id)
 res -> loans : member_has_title_on_loan(member_id, title_id)
-alt copy available, already reserved, 3 active reservations, or title on loan
+res -> pol : reservation_refusal(available, already_reserved, on_loan, active)
+alt refusal message (copy available, already reserved,\n3 active reservations, or title on loan)
   res -> db : rollback
   res --> bp : raise BusinessRuleError(message)
   bp --> Member : e.g. "A copy is available - borrow it at the desk"

@@ -6,6 +6,7 @@ actor Member
 boundary ":circulation_bp" as bp
 control ":CirculationService" as circ
 control ":ReservationService" as res
+control ":EligibilityPolicy" as pol
 entity ":LoanRepository" as loans
 entity ":CopyRepository" as copies
 database ":Database" as db
@@ -23,7 +24,8 @@ alt actor is a Member and loan belongs to someone else
 else own loan
   circ -> copies : get(loan.copy_id)
   circ -> res : has_waiting(copy.title_id, exclude_member_id = loan.member_id)
-  alt renewal_count = 2, loan overdue, or title reserved by another member
+  circ -> pol : renew_refusal(loan, today, reserved_by_other)
+  alt refusal message (renewal_count = 2, loan overdue,\nor title reserved by another member)
     circ -> db : rollback
     circ --> bp : raise BusinessRuleError(message)
     bp --> Member : "Maximum renewals reached (2)" / ...

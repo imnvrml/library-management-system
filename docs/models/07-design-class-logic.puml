@@ -101,6 +101,13 @@ package "library.services  <<Service Layer>>" as svc {
     -rules: Rules
     +fine_for(due: date, returned: date): int
   }
+  class EligibilityPolicy <<pure functions>> {
+    -rules: Rules
+    +checkout_refusal(member: MemberFacts, copy: Copy, member_id: int): str | None
+    +renew_refusal(loan: Loan, today: date, reserved_by_other: bool): str | None
+    +reservation_refusal(available: int, already_reserved: bool, on_loan: bool, active: int): str | None
+    +payment_refusal(amount_qepik: int, balance_qepik: int): str | None
+  }
   class Rules <<frozen dataclass>> {
     +loan_days: int = 14
     +max_loans: int = 5
@@ -145,6 +152,10 @@ CatalogueService --> ReservationService : queue
 CirculationService --> MemberService : members
 CirculationService --> ReservationService : queue
 CirculationService --> FinePolicy
+CirculationService --> EligibilityPolicy
+ReservationService --> EligibilityPolicy
+MemberService --> EligibilityPolicy
+EligibilityPolicy --> Rules
 CirculationService --> Clock
 ReservationService --> Clock
 FinePolicy --> Rules
@@ -156,5 +167,5 @@ svc ..> BusinessRuleError : raises
 svc ..> AccessDeniedError : raises (HTTP 403)
 MemberService ..> AuthService : hash_password
 
-note "Patterns: Service Layer (business rules only in services),\nStrategy (Clock: SystemClock in production, FixedClock in tests),\nApplication Factory (create_app), Decorator (role_required)." as N1
+note "Patterns: Service Layer (business rules only in services),\nPolicy objects (FinePolicy, EligibilityPolicy: pure decision rules),\nStrategy (Clock: SystemClock in production, FixedClock in tests),\nApplication Factory (create_app), Decorator (role_required)." as N1
 @enduml

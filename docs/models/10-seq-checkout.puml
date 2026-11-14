@@ -7,6 +7,7 @@ boundary ":circulation_bp" as bp
 control ":CirculationService" as circ
 control ":ReservationService" as res
 control ":MemberService" as mem
+control ":EligibilityPolicy" as pol
 entity ":LoanRepository" as loans
 entity ":CopyRepository" as copies
 database ":Database" as db
@@ -20,12 +21,14 @@ note right : UC-14 - FR-15
 circ -> mem : get member, balance(member_id)
 circ -> loans : open_loans_of(member_id)
 circ -> copies : find_by_code(copy_code)
+circ -> pol : checkout_refusal(member facts, copy, member_id)
+pol --> circ : None or message
 
 alt member inactive, loan limit reached, overdue loan,\nbalance > 5.00 AZN, copy not available or held for another member
   circ -> db : rollback
   circ --> bp : raise BusinessRuleError(message)
   bp --> Librarian : checkout form with message\n(e.g. "Loan limit reached (5)")
-else member eligible and copy can be lent
+else None (member eligible and copy can be lent)
   opt copy is On hold for this member
     circ -> res : fulfil_hold(copy, member_id)
     note right : reservation -> Fulfilled (FR-09 AC6)

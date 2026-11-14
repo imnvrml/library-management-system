@@ -9,6 +9,7 @@ control ":MemberService" as mem
 control ":AuthService" as as
 control ":CirculationService" as circ
 control ":FinePolicy" as fine
+control ":EligibilityPolicy" as pol
 entity ":UserRepository" as users
 entity ":LoanRepository" as loans
 entity ":PaymentRepository" as pays
@@ -45,6 +46,7 @@ Librarian -> bp : POST /members/<id>/payments (amount)
 bp -> mem : record_payment(member_id, amount_qepik, librarian_id)
 mem -> loans : total_fines(member_id)
 mem -> pays : total_paid(member_id)
+mem -> pol : payment_refusal(amount_qepik, balance)
 alt amount <= 0 or amount > balance
   mem --> bp : raise BusinessRuleError("Invalid amount")
 else
