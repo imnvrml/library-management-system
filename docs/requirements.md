@@ -273,3 +273,83 @@ configuration module in the code so that the library manager can change them wit
 | BR-13 | Minimum password length | 8 characters |
 | BR-14 | Money is stored and calculated as whole qəpik (integers) and shown as AZN with 2 decimals | — |
 
+## 8. Assumptions
+
+The topic description is brief; where it was vague, the following decisions were made.
+
+| ID | Assumption | Justification |
+|---|---|---|
+| A-01 | The library has one site, one time zone (Asia/Baku) and one circulation desk. | "Community library" suggests a single small site; multiple branches are excluded (W-04). |
+| A-02 | Fines count calendar days, including weekends and public holidays. | Matches the current paper practice and keeps the rule simple; to be confirmed (OI-01). |
+| A-03 | All librarians have the same permissions; there is no separate administrator role. The first librarian account is created with a setup command. | A small library has 1–3 staff members who all do the same work. |
+| A-04 | Only librarians create member accounts. | Identity is checked at the desk (W-05). |
+| A-05 | There is no background scheduler. Hold expiry (FR-15) is evaluated before every circulation action and when the librarian dashboard is opened. | Expiry only matters when someone acts on a copy, so evaluating it on demand gives the same result as a nightly job with less infrastructure. |
+| A-06 | A title can be reserved only when none of its copies is Available. | If a copy is on the shelf, the member can simply borrow it; this keeps queues short. Koha allows more (see Appendix A), which is not needed here. |
+| A-07 | A renewal extends the loan from the current due date, not from the renewal date. | Members are not penalised for renewing early; the new due date is predictable. |
+| A-08 | Fines are charged when the copy is returned. The fine accrued so far on an overdue loan is shown for information (FR-19) but is not part of the balance. | An overdue loan already blocks borrowing (BR-06), so counting it twice is unnecessary. |
+| A-09 | Copy codes are typed in by the librarian. | Barcode hardware is out of scope (W-03). |
+| A-10 | The system reads "today" from one clock component that tests can replace. | Date rules (due dates, fines, holds) must be testable at exact boundaries. |
+| A-11 | The user interface is in English. | Matches the language of the course documents. |
+
+## 9. Constraints
+
+| ID | Constraint |
+|---|---|
+| C-01 | Implementation in Python 3.12 with Flask, Jinja templates and SQLite (standard `sqlite3` module). |
+| C-02 | One developer; deadline 02.12.2026. |
+| C-03 | No budget: only free and open-source tools. |
+| C-04 | The system runs locally on one computer; no hosting or internet connection is needed. |
+| C-05 | Repository layout `docs/`, `src/`, `tests/`; documents submitted as PDF; Git with a meaningful history. |
+
+## 10. Open issues
+
+| ID | Issue | Owner | Current handling |
+|---|---|---|---|
+| OI-01 | Should days when the library is closed be excluded from fines? | Library manager | Calendar days (A-02). |
+| OI-02 | What replacement fee applies to a lost copy? | Library manager | Entered manually by the librarian (FR-21, Could). |
+| OI-03 | Do children need different loan limits (member categories, as in Koha)? | Library manager | One category for all members. |
+| OI-04 | How long must loan history be kept for privacy reasons? | Library manager | Kept indefinitely in this release. |
+| OI-05 | The course brief refers to a change-request section and an AI-use section that are not in the handout ("Section ??"). | Course instructor | Change request handled in a separate document; AI use described in the reflection. |
+
+## Appendix A — Analysis of existing systems
+
+Two existing systems were studied from their public documentation to collect requirements and to check
+the decisions above.
+
+### A.1 Koha (open-source integrated library system)
+Koha is a full library system used by thousands of libraries. Its circulation is driven by a **circulation
+and fine rules matrix**: for each combination of library, patron category and item type it defines the loan
+period, the number of renewals allowed, the fine per day and a maximum fine. A system preference
+(`noissuescharge`) blocks checkouts once a patron owes more than a set amount, and another
+(`ReservesMaxPickUpDelay`) sets how many days a hold waits on the shelf before it expires.
+
+**What we learned and used:**
+- Lending parameters belong in rules, not in code → business rules table (Section 7) kept in one configuration module.
+- Blocking by outstanding balance → BR-05 and FR-09 AC4.
+- Fine per day with a cap → BR-07 and FR-12.
+- Holds that expire after a pickup period → BR-08 and FR-15.
+- Renewal limits shared by all renewals → BR-03.
+- **Rejected for this project:** the full rule matrix per patron category and item type, multiple branches, and reservations while copies are on the shelf. They add configuration effort that a single small library does not need (A-01, A-06, OI-03).
+
+### A.2 Libib (cloud cataloguing and lending service)
+Libib is a lightweight web and mobile service aimed at small libraries such as schools and churches. Lending
+is part of the paid Pro tier. The owner sets one default loan period in days, and staff can override a due
+date. The checkout list shows the soonest-due items first and marks overdue items in red. Staff can place
+holds for patrons, patrons can place holds from the published library page, and patrons can log in to see
+their lending history and active holds. Libib also sends e-mail reminders and offers a self-checkout kiosk.
+
+**What we learned and used:**
+- One simple loan period suits a small library better than a complex matrix → BR-01.
+- Overdue items should stand out → FR-19 overdue list, sorted by days late.
+- Members want to see their own loans and holds → FR-17 member account page.
+- Staff place holds on behalf of patrons → FR-13 allows the librarian to reserve for a member.
+- **Rejected for this project:** e-mail reminders and self-checkout kiosk (W-02, W-03), because they need a mail service and barcode hardware.
+
+### A.3 Sources
+- Koha circulation and fine rules (ByWater Solutions knowledge base): https://help.bywatersolutions.com/portal/en/kb/articles/circulation-and-fine-rule-matrix
+- Koha renewals: https://help.bywatersolutions.com/portal/en/kb/articles/renewals
+- Koha bug 40913 (ReservesMaxPickUpDelay): https://lists.koha-community.org/archives/list/koha-bugs@lists.koha-community.org/thread/QLX4FBSDPC7KTPKMX2RPXISILWYH3UCX/
+- Libib lending overview: https://support.libib.com/?p=267
+- Libib Pro: https://support.libib.com/getting-started/get-libib-pro.html
+- Libib holds: https://support.libib.com/tags/holds
+
