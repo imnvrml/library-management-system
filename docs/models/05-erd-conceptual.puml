@@ -1,0 +1,81 @@
+@startchen erd-conceptual
+' Conceptual ERD (Chen notation): entities, relationships, cardinalities, key attributes only
+
+entity USER {
+  UserID <<key>>
+  FullName
+  Email
+}
+entity MEMBER {
+  Phone
+  IsActive
+}
+entity LIBRARIAN {
+}
+USER ->- d { MEMBER, LIBRARIAN }
+
+entity BOOK_TITLE {
+  ISBN <<key>>
+  TitleText
+  Author
+  Publisher
+  PublicationYear
+}
+entity COPY {
+  CopyCode <<key>>
+  Status
+}
+entity LOAN {
+  LoanID <<key>>
+  CheckoutDate
+  DueDate
+  ReturnDate
+  RenewalCount
+  Fine
+}
+entity RESERVATION {
+  ReservationID <<key>>
+  PlacedAt
+  Status
+  PickupDeadline
+}
+entity PAYMENT {
+  PaymentID <<key>>
+  Amount
+  PaidAt
+}
+
+relationship HAS {
+}
+relationship BORROWS {
+}
+relationship LENT_IN {
+}
+relationship PLACES {
+}
+relationship FOR_TITLE {
+}
+relationship HOLDS {
+}
+relationship PAYS {
+}
+relationship RECORDS {
+}
+
+BOOK_TITLE -1- HAS
+HAS =N= COPY
+MEMBER -1- BORROWS
+BORROWS =N= LOAN
+COPY -1- LENT_IN
+LENT_IN =N= LOAN
+MEMBER -1- PLACES
+PLACES =N= RESERVATION
+BOOK_TITLE -1- FOR_TITLE
+FOR_TITLE =N= RESERVATION
+RESERVATION -1- HOLDS
+HOLDS -1- COPY
+MEMBER -1- PAYS
+PAYS =N= PAYMENT
+LIBRARIAN -1- RECORDS
+RECORDS =N= PAYMENT
+@endchen
