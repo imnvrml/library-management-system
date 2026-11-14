@@ -3,9 +3,16 @@
 | | |
 |---|---|
 | **Author** | Ramil İmanov (group M666İ5) |
-| **Version** | 1.0 |
+| **Version** | 1.1 |
 | **Date** | 2026-11-15 |
 | **Based on** | Requirements Specification v1.1 |
+
+**Revision history**
+
+| Version | Change | Reason |
+|---|---|---|
+| 1.0 | First version. | — |
+| 1.1 | Added `EligibilityPolicy` (pure functions `checkout_refusal`, `renew_refusal`, `reservation_refusal`, `payment_refusal`); SD-01, SD-03, SD-04 and SD-07 now call it. | Found while writing the test plan: the decision-table rules were hidden inside services that need a database, so they could only be tested at integration level. As pure functions they can be unit-tested exhaustively. |
 
 All diagrams are written in PlantUML. The source files are in `docs/models/*.puml` and the exported images
 in `docs/models/img/`. To regenerate the images: `java -jar plantuml.jar -tpng -o img docs/models/*.puml`.
@@ -147,7 +154,9 @@ This is a historical fact, not a duplicate.
 ![Design class diagram – logic](models/img/design-class-logic.png)
 
 Flask blueprints only translate HTTP requests into service calls; all business rules live in the services.
-Patterns marked: **Service Layer** (services), **Strategy** (`Clock` with `SystemClock` and the test double
+Patterns marked: **Service Layer** (services), **Policy objects** (`FinePolicy` and `EligibilityPolicy` hold the
+decision rules as pure functions without database access, so every decision-table rule is unit-testable),
+**Strategy** (`Clock` with `SystemClock` and the test double
 `FixedClock`, needed to test date boundaries, A-10), **Application Factory** (`create_app`, which wires the
 services through constructor injection), and **Decorator** (`role_required`, FR-02). Rule values live in one
 frozen `Rules` object (Section 7 of the requirements).
