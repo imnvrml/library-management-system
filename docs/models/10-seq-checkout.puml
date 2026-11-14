@@ -1,0 +1,40 @@
+@startuml seq-checkout
+' SD-01 Check out a copy (UC-05, includes UC-14) - with error path
+skinparam shadowing false
+autonumber
+actor Librarian
+boundary ":circulation_bp" as bp
+control ":CirculationService" as circ
+control ":ReservationService" as res
+control ":MemberService" as mem
+entity ":LoanRepository" as loans
+entity ":CopyRepository" as copies
+database ":Database" as db
+
+Librarian -> bp : POST /circulation/checkout\n(member_id, copy_code)
+bp -> circ : checkout(member_id, copy_code)
+activate circ
+circ -> db : transaction() begin
+circ -> res : expire_holds()
+note right : UC-14 - FR-15
+circ -> mem : get member, balance(member_id)
+circ -> loans : open_loans_of(member_id)
+circ -> copies : find_by_code(copy_code)
+
+alt member inactive, loan limit reached, overdue loan,\nbalance > 5.00 AZN, copy not available or held for another member
+  circ -> db : rollback
+  circ --> bp : raise BusinessRuleError(message)
+  bp --> Librarian : checkout form with message\n(e.g. "Loan limit reached (5)")
+else member eligible and copy can be lent
+  opt copy is On hold for this member
+    circ -> res : fulfil_hold(copy, member_id)
+    note right : reservation -> Fulfilled (FR-09 AC6)
+  end
+  circ -> loans : add(Loan(due_date = today + 14))
+  circ -> copies : set_status(copy.id, ON_LOAN)
+  circ -> db : commit
+  circ --> bp : Loan
+  bp --> Librarian : "Checked out, due 2026-12-15"
+end
+deactivate circ
+@enduml

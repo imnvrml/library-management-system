@@ -3,9 +3,16 @@
 | | |
 |---|---|
 | **Author** | Ramil İmanov (group M666İ5) |
-| **Version** | 1.0 |
+| **Version** | 1.1 |
 | **Date** | 2026-11-15 |
 | **Status** | Baseline for design |
+
+**Revision history**
+
+| Version | Date | Change | Reason |
+|---|---|---|---|
+| 1.0 | 2026-11-15 | First baseline. | — |
+| 1.1 | 2026-11-15 | FR-04: a new copy of a title with Waiting reservations goes On hold for the first reservation (AC3 added). | Gap found while drawing the Copy state machine: a new copy would have become Available while members were waiting, which breaks the queue rule of FR-14. |
 
 ## 1. Introduction
 
@@ -105,9 +112,11 @@ publisher and publication year.
 - AC4: Given a publication year outside BR-12, or an empty title or author, when saving, then the form is rejected and names the invalid field.
 
 **FR-04 — Add copies (M).** The librarian shall be able to add one or more physical copies to an existing
-title; each copy gets a unique copy code and starts in state *Available*.
-- AC1: Given an existing title, when the librarian adds a copy with an unused code, then the copy appears with state Available and the title's available count increases by 1.
+title; each copy gets a unique copy code and starts in state *Available*, unless the title has a Waiting
+reservation, in which case the new copy is placed On hold for the first reservation in the queue (FR-14).
+- AC1: Given an existing title without Waiting reservations, when the librarian adds a copy with an unused code, then the copy appears with state Available and the title's available count increases by 1.
 - AC2: Given a copy code that is already used, when saving, then the copy is rejected with "Copy code already exists".
+- AC3: Given a title with a Waiting reservation by member A, when the librarian adds a copy, then the copy is On hold for A and A's reservation is Ready for pickup.
 
 **FR-05 — Edit title and withdraw copy (S).** The librarian shall be able to correct title data and withdraw
 a copy that is no longer lendable (state *Withdrawn*). A copy that is on loan or on hold cannot be withdrawn.

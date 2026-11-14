@@ -1,0 +1,50 @@
+@startuml seq-return
+' SD-02 Return a copy (UC-06, includes UC-13, UC-14, UC-15)
+skinparam shadowing false
+autonumber
+actor Librarian
+boundary ":circulation_bp" as bp
+control ":CirculationService" as circ
+control ":FinePolicy" as fine
+control ":ReservationService" as res
+entity ":LoanRepository" as loans
+entity ":ReservationRepository" as rrepo
+entity ":CopyRepository" as copies
+database ":Database" as db
+
+Librarian -> bp : POST /circulation/return (copy_code)
+bp -> circ : return_copy(copy_code)
+activate circ
+circ -> db : transaction() begin
+circ -> res : expire_holds()
+circ -> copies : find_by_code(copy_code)
+circ -> loans : open_loan_for_copy(copy.id)
+
+alt no open loan for this copy
+  circ -> db : rollback
+  circ --> bp : raise BusinessRuleError("Copy is not on loan")
+  bp --> Librarian : message
+else open loan found
+  circ -> fine : fine_for(loan.due_date, today)
+  note right : UC-13 - FR-12\nmin(days_late x 20, 1000) qepik
+  fine --> circ : fine_qepik
+  circ -> loans : update(loan: return_date, fine_qepik)
+  circ -> res : serve_queue(copy)
+  activate res
+  note right of res : UC-15 - FR-14
+  res -> rrepo : waiting_queue(copy.title_id)
+  alt queue not empty
+    res -> rrepo : update(first: READY,\nheld_copy_id, pickup_deadline = today + 3)
+    res -> copies : set_status(copy.id, ON_HOLD)
+    res --> circ : true
+  else queue empty
+    res -> copies : set_status(copy.id, AVAILABLE)
+    res --> circ : false
+  end
+  deactivate res
+  circ -> db : commit
+  circ --> bp : Loan (fine_qepik)
+  bp --> Librarian : "Returned. Fine 0.40 AZN.\nCopy on hold for next member"
+end
+deactivate circ
+@enduml

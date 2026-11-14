@@ -1,0 +1,160 @@
+@startuml design-class-logic
+' Design class diagram (1/2): presentation and business-logic layers
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+hide empty members
+left to right direction
+
+package "library.web  <<Flask blueprints>>" as web {
+  class auth_bp <<blueprint>> {
+    +login()
+    +logout()
+  }
+  class catalogue_bp <<blueprint>> {
+    +search()
+    +add_title()
+    +add_copy()
+    +withdraw_copy()
+  }
+  class members_bp <<blueprint>> {
+    +register()
+    +deactivate()
+    +record_payment()
+  }
+  class circulation_bp <<blueprint>> {
+    +checkout()
+    +return_copy()
+    +renew()
+    +overdue()
+  }
+  class reservations_bp <<blueprint>> {
+    +place()
+    +cancel()
+  }
+  class account_bp <<blueprint>> {
+    +my_account()
+  }
+  class "create_app(config)" as factory <<Application Factory>> {
+    +create_app(config: dict): Flask
+  }
+  class "role_required(role)" as guard <<Decorator>> {
+    +role_required(role: Role)
+  }
+}
+
+package "library.services  <<Service Layer>>" as svc {
+  class AuthService {
+    -users: UserRepository
+    +login(email: str, password: str): User
+    +{static} hash_password(plain: str): str
+  }
+  class CatalogueService {
+    -titles: TitleRepository
+    -copies: CopyRepository
+    -queue: ReservationService
+    +add_title(isbn, title, author, publisher, year): Title
+    +add_copy(title_id: int, code: str): Copy
+    +withdraw_copy(copy_id: int): Copy
+    +search(text: str): list[TitleSummary]
+    +{static} is_valid_isbn(isbn: str): bool
+  }
+  class MemberService {
+    -users: UserRepository
+    -loans: LoanRepository
+    -payments: PaymentRepository
+    +register(full_name, email, phone, password): User
+    +deactivate(member_id: int): User
+    +balance(member_id: int): int
+    +record_payment(member_id, amount_qepik, librarian_id): Payment
+    +account_summary(member_id: int): AccountSummary
+  }
+  class CirculationService {
+    -copies: CopyRepository
+    -loans: LoanRepository
+    -members: MemberService
+    -queue: ReservationService
+    -clock: Clock
+    -rules: Rules
+    +checkout(member_id: int, copy_code: str): Loan
+    +return_copy(copy_code: str): Loan
+    +renew(loan_id: int, actor: User): Loan
+    +overdue_loans(): list[OverdueLoan]
+    -check_eligibility(member: User)
+  }
+  class ReservationService {
+    -reservations: ReservationRepository
+    -copies: CopyRepository
+    -loans: LoanRepository
+    -clock: Clock
+    -rules: Rules
+    +place(member_id: int, title_id: int): Reservation
+    +cancel(reservation_id: int, actor: User): Reservation
+    +serve_queue(copy: Copy): bool
+    +expire_holds(): int
+    +position(reservation: Reservation): int
+    +fulfil_hold(copy: Copy, member_id: int)
+    +has_waiting(title_id: int, exclude_member_id: int): bool
+    +active_of(member_id: int): list[ReservationView]
+  }
+  class FinePolicy {
+    -rules: Rules
+    +fine_for(due: date, returned: date): int
+  }
+  class Rules <<frozen dataclass>> {
+    +loan_days: int = 14
+    +max_loans: int = 5
+    +max_renewals: int = 2
+    +borrow_threshold_qepik: int = 500
+    +fine_per_day_qepik: int = 20
+    +max_fine_qepik: int = 1000
+    +pickup_days: int = 3
+    +max_reservations: int = 3
+    +min_year: int = 1800
+    +min_password_len: int = 8
+  }
+  interface Clock <<Strategy>> {
+    +today(): date
+  }
+  class SystemClock {
+    +today(): date
+  }
+  class FixedClock <<test double>> {
+    -day: date
+    +today(): date
+    +advance(days: int)
+  }
+  class AccessDeniedError <<exception>> {
+    +message: str
+  }
+  class BusinessRuleError <<exception>> {
+    +message: str
+  }
+}
+
+auth_bp ..> AuthService
+catalogue_bp ..> CatalogueService
+members_bp ..> MemberService
+circulation_bp ..> CirculationService
+reservations_bp ..> ReservationService
+account_bp ..> MemberService
+account_bp ..> ReservationService
+factory ..> svc : wires services\n(dependency injection)
+
+CatalogueService --> ReservationService : queue
+CirculationService --> MemberService : members
+CirculationService --> ReservationService : queue
+CirculationService --> FinePolicy
+CirculationService --> Clock
+ReservationService --> Clock
+FinePolicy --> Rules
+CirculationService --> Rules
+ReservationService --> Rules
+Clock <|.. SystemClock
+Clock <|.. FixedClock
+svc ..> BusinessRuleError : raises
+svc ..> AccessDeniedError : raises (HTTP 403)
+MemberService ..> AuthService : hash_password
+
+note "Patterns: Service Layer (business rules only in services),\nStrategy (Clock: SystemClock in production, FixedClock in tests),\nApplication Factory (create_app), Decorator (role_required)." as N1
+@enduml

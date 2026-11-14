@@ -1,0 +1,65 @@
+@startuml use-case
+' Use case diagram - Library Management System
+left to right direction
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #FDFDFD
+  BorderColor #333333
+}
+
+actor "User" as U
+actor "Member" as M
+actor "Librarian" as L
+U <|-- M
+U <|-- L
+
+rectangle "Library Management System" {
+  together {
+    usecase "UC-01 Log in / log out" as UC01
+    usecase "UC-02 Search catalogue" as UC02
+    usecase "UC-07 Renew loan" as UC07
+    usecase "UC-08 Place reservation" as UC08
+    usecase "UC-09 Cancel reservation" as UC09
+  }
+  usecase "UC-10 View my account" as UC10
+  together {
+    usecase "UC-03 Manage catalogue\n(titles and copies)" as UC03
+    usecase "UC-04 Manage members" as UC04
+    usecase "UC-05 Check out copy" as UC05
+    usecase "UC-06 Return copy" as UC06
+    usecase "UC-11 Record fine payment" as UC11
+    usecase "UC-12 View overdue loans" as UC12
+  }
+  usecase "UC-13 Calculate fine" as UC13
+  usecase "UC-14 Process expired holds" as UC14
+  usecase "UC-15 Serve reservation queue" as UC15
+}
+
+U --> UC01
+U --> UC02
+U --> UC07
+U --> UC08
+U --> UC09
+M --> UC10
+L --> UC03
+L --> UC04
+L --> UC05
+L --> UC06
+L --> UC11
+L --> UC12
+
+UC05 ..> UC14 : <<include>>
+UC06 ..> UC14 : <<include>>
+UC07 ..> UC14 : <<include>>
+UC08 ..> UC14 : <<include>>
+UC06 ..> UC13 : <<include>>
+UC06 ..> UC15 : <<include>>
+UC03 ..> UC15 : <<include>>
+UC09 ..> UC15 : <<include>>
+UC14 ..> UC15 : <<include>>
+
+note bottom of U
+  A Member may renew, reserve and cancel
+  only for their own account (FR-02).
+end note
+@enduml

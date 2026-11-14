@@ -1,0 +1,159 @@
+@startuml design-class-data
+' Design class diagram (2/2): data-access layer and domain objects
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+hide empty members
+
+package "library.repositories  <<Repository>>" as repo {
+  class Database {
+    -path: str
+    +connection(): sqlite3.Connection
+    +transaction(): ContextManager
+    +init_schema()
+  }
+  class UserRepository {
+    -db: Database
+    +get(id: int): User
+    +find_by_email(email: str): User
+    +add(user: User): User
+    +set_active(id: int, active: bool)
+  }
+  class TitleRepository {
+    -db: Database
+    +get(id: int): Title
+    +find_by_isbn(isbn: str): Title
+    +add(title: Title): Title
+    +search(text: str): list[TitleSummary]
+  }
+  class CopyRepository {
+    -db: Database
+    +get(id: int): Copy
+    +find_by_code(code: str): Copy
+    +add(copy: Copy): Copy
+    +set_status(id: int, status: CopyStatus)
+    +count_available(title_id: int): int
+  }
+  class LoanRepository {
+    -db: Database
+    +get(id: int): Loan
+    +open_loan_for_copy(copy_id: int): Loan
+    +open_loans_of(member_id: int): list[Loan]
+    +overdue(today: date): list[Loan]
+    +add(loan: Loan): Loan
+    +update(loan: Loan)
+    +total_fines(member_id: int): int
+    +member_has_title_on_loan(member_id: int, title_id: int): bool
+  }
+  class ReservationRepository {
+    -db: Database
+    +get(id: int): Reservation
+    +waiting_queue(title_id: int): list[Reservation]
+    +active_of(member_id: int): list[Reservation]
+    +expired_holds(today: date): list[Reservation]
+    +add(r: Reservation): Reservation
+    +update(r: Reservation)
+  }
+  class PaymentRepository {
+    -db: Database
+    +add(p: Payment): Payment
+    +total_paid(member_id: int): int
+  }
+}
+
+package "library.domain  <<dataclasses>>" as domain {
+  enum Role {
+    LIBRARIAN
+    MEMBER
+  }
+  enum CopyStatus {
+    AVAILABLE
+    ON_LOAN
+    ON_HOLD
+    WITHDRAWN
+    LOST
+  }
+  enum ReservationStatus {
+    WAITING
+    READY
+    FULFILLED
+    EXPIRED
+    CANCELLED
+  }
+  class User {
+    +id: int
+    +email: str
+    +password_hash: str
+    +full_name: str
+    +phone: str
+    +role: Role
+    +is_active: bool
+  }
+  class Title {
+    +id: int
+    +isbn: str
+    +title: str
+    +author: str
+    +publisher: str
+    +pub_year: int
+  }
+  class Copy {
+    +id: int
+    +title_id: int
+    +code: str
+    +status: CopyStatus
+  }
+  class Loan {
+    +id: int
+    +copy_id: int
+    +member_id: int
+    +checkout_date: date
+    +due_date: date
+    +return_date: date | None
+    +renewal_count: int
+    +fine_qepik: int
+    +is_overdue(today: date): bool
+  }
+  class Reservation {
+    +id: int
+    +title_id: int
+    +member_id: int
+    +placed_at: datetime
+    +status: ReservationStatus
+    +held_copy_id: int | None
+    +pickup_deadline: date | None
+  }
+  class Payment {
+    +id: int
+    +member_id: int
+    +librarian_id: int
+    +amount_qepik: int
+    +paid_at: datetime
+  }
+}
+
+UserRepository --> Database
+TitleRepository --> Database
+CopyRepository --> Database
+LoanRepository --> Database
+ReservationRepository --> Database
+PaymentRepository --> Database
+
+UserRepository ..> User
+TitleRepository ..> Title
+CopyRepository ..> Copy
+LoanRepository ..> Loan
+ReservationRepository ..> Reservation
+PaymentRepository ..> Payment
+
+User --> Role
+Copy --> CopyStatus
+Reservation --> ReservationStatus
+Title "1" -- "0..*" Copy
+Copy "1" -- "0..*" Loan
+User "1" -- "0..*" Loan : member
+User "1" -- "0..*" Reservation : member
+Title "1" -- "0..*" Reservation
+Reservation "0..1" -- "0..1" Copy : held copy
+User "1" -- "0..*" Payment
+@enduml
