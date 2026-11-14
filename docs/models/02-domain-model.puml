@@ -1,0 +1,65 @@
+@startuml domain-model
+' Domain model (conceptual class diagram) - no implementation details
+hide circle
+hide methods
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+abstract class User {
+  fullName
+  email
+}
+class Member {
+  phone
+  isActive
+}
+class Librarian
+class Title {
+  isbn
+  title
+  author
+  publisher
+  publicationYear
+}
+class Copy {
+  copyCode
+  status
+}
+class Loan {
+  checkoutDate
+  dueDate
+  returnDate
+  renewalCount
+  fine
+}
+class Reservation {
+  placedAt
+  status
+  pickupDeadline
+}
+class Payment {
+  amount
+  paidAt
+}
+
+User <|-- Member
+User <|-- Librarian
+
+Title "1" -- "0..*" Copy : has >
+Member "1" -- "0..*" Loan : borrows >
+Copy "1" -- "0..*" Loan : is lent in >
+Member "1" -- "0..*" Reservation : places >
+Title "1" -- "0..*" Reservation : is reserved by <
+Reservation "0..1" -- "0..1" Copy : holds >
+Member "1" -- "0..*" Payment : pays >
+Librarian "1" -- "0..*" Payment : records >
+
+note right of Loan
+  At most one open loan
+  (returnDate empty) per copy.
+end note
+note bottom of Reservation
+  The queue of a title is
+  ordered by placedAt.
+end note
+@enduml
