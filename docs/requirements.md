@@ -236,3 +236,40 @@ and charges a replacement fee entered by the librarian.
 | W-04 | Inter-library loans and multiple branches | The library has one site. |
 | W-05 | Member self-registration | The library checks identity at the desk before creating an account. |
 
+## 6. Non-functional requirements
+
+Each requirement states how it is measured, so that it can be verified by a test or an inspection.
+
+| ID | Category | Requirement | Measure / verification | Priority |
+|---|---|---|---|---|
+| NFR-01 | Performance | Catalogue search shall return results quickly on a realistic data volume. | With 1,000 titles and 3,000 copies in the database, 95 % of searches complete in ≤ 1 s on the reference laptop (any 4-core CPU, 8 GB RAM); measured by an automated timing test over 100 searches. | M |
+| NFR-02 | Security | Passwords shall never be stored in plain text. | Every stored password is a salted hash produced by Werkzeug `generate_password_hash` (scrypt or PBKDF2); an automated test asserts that the stored value differs from the password and that no column contains the plain text. | M |
+| NFR-03 | Security / privacy | Users shall only reach data and actions allowed for their role (FR-02). | 100 % of librarian routes are covered by an automated test that calls them as a Member (expects 403) and as a Visitor (expects redirect to login). | M |
+| NFR-04 | Data integrity | Checkout, return, renewal and hold expiry shall be atomic. | Each operation runs in one database transaction; a fault-injection test that raises an error in the middle of a return leaves loan, copy and reservation rows unchanged. | M |
+| NFR-05 | Usability | A new librarian shall be able to perform a checkout without training. | In a walkthrough with 2 people who have never seen the system, each completes a checkout and a return within 2 minutes using only on-screen labels; every refused action shows a message that names the rule (e.g. "Loan limit reached (5)"). | S |
+| NFR-06 | Privacy | The system shall store only the personal data needed for lending. | Member data is limited to full name, e-mail, phone and password hash; checked by schema inspection. Members never see other members' names in queues (only their own position). | M |
+| NFR-07 | Maintainability | The business rules shall be well tested. | Statement coverage of the service (business-logic) layer ≥ 90 %, measured with pytest-cov. | S |
+| NFR-08 | Portability / operability | The system shall be easy to install and test. | Runs on Windows 10+ and Linux with Python 3.12 and only the packages in `requirements.txt`; install + start takes ≤ 5 commands; the full automated test suite runs with one command in ≤ 30 s. | M |
+
+## 7. Business rules
+
+The numeric parameters below are referenced by the functional requirements. They are defined in one
+configuration module in the code so that the library manager can change them without changing logic.
+
+| ID | Rule | Value |
+|---|---|---|
+| BR-01 | Loan period (also the renewal extension) | 14 calendar days |
+| BR-02 | Maximum number of active loans per member | 5 |
+| BR-03 | Maximum renewals per loan | 2 |
+| BR-04 | A loan cannot be renewed while another member has a Waiting reservation for the same title | — |
+| BR-05 | Borrowing threshold: checkout is refused if the balance is **greater than** this amount | 5.00 AZN |
+| BR-06 | A loan is overdue when the current date is later than its due date; a member with an overdue loan cannot borrow | — |
+| BR-07 | Overdue fine per calendar day / maximum fine per loan | 0.20 AZN / 10.00 AZN |
+| BR-08 | Pickup period for a hold: pickup deadline = date the hold starts + this period; the copy can be collected until the end of the deadline day | 3 calendar days |
+| BR-09 | A copy On hold can only be checked out to the member it is held for | — |
+| BR-10 | Maximum active reservations (Waiting or Ready for pickup) per member | 3 |
+| BR-11 | ISBN format: 13 digits after removing hyphens and spaces; check digit valid (weights 1 and 3 alternating, weighted sum divisible by 10) | — |
+| BR-12 | Allowed publication year | 1450 to the current year |
+| BR-13 | Minimum password length | 8 characters |
+| BR-14 | Money is stored and calculated as whole qəpik (integers) and shown as AZN with 2 decimals | — |
+
