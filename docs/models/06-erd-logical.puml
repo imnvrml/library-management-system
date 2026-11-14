@@ -1,0 +1,82 @@
+@startuml erd-logical
+' Logical ERD (crow's foot) - SQLite tables in 3NF
+hide circle
+skinparam shadowing false
+skinparam linetype ortho
+
+entity "user" as user {
+  * id : INTEGER <<PK>>
+  --
+  * email : TEXT <<UNIQUE>>
+  * password_hash : TEXT
+  * full_name : TEXT
+  phone : TEXT
+  * role : TEXT <<CHECK librarian|member>>
+  * is_active : INTEGER <<0/1>>
+  * created_at : TEXT <<ISO date-time>>
+}
+
+entity "title" as title {
+  * id : INTEGER <<PK>>
+  --
+  * isbn : TEXT <<UNIQUE, 13 digits>>
+  * title : TEXT
+  * author : TEXT
+  publisher : TEXT
+  * pub_year : INTEGER <<CHECK 1800..current>>
+}
+
+entity "copy" as copy {
+  * id : INTEGER <<PK>>
+  --
+  * title_id : INTEGER <<FK title.id>>
+  * code : TEXT <<UNIQUE>>
+  * status : TEXT <<CHECK available|on_loan|on_hold|withdrawn|lost>>
+}
+
+entity "loan" as loan {
+  * id : INTEGER <<PK>>
+  --
+  * copy_id : INTEGER <<FK copy.id>>
+  * member_id : INTEGER <<FK user.id>>
+  * checkout_date : TEXT <<ISO date>>
+  * due_date : TEXT <<ISO date>>
+  return_date : TEXT <<ISO date, NULL = open>>
+  * renewal_count : INTEGER <<0..2>>
+  * fine_qepik : INTEGER <<min 0>>
+}
+
+entity "reservation" as reservation {
+  * id : INTEGER <<PK>>
+  --
+  * title_id : INTEGER <<FK title.id>>
+  * member_id : INTEGER <<FK user.id>>
+  * placed_at : TEXT <<ISO date-time>>
+  * status : TEXT <<CHECK waiting|ready|fulfilled|expired|cancelled>>
+  held_copy_id : INTEGER <<FK copy.id, NULL>>
+  pickup_deadline : TEXT <<ISO date, NULL>>
+}
+
+entity "payment" as payment {
+  * id : INTEGER <<PK>>
+  --
+  * member_id : INTEGER <<FK user.id>>
+  * librarian_id : INTEGER <<FK user.id>>
+  * amount_qepik : INTEGER <<positive>>
+  * paid_at : TEXT <<ISO date-time>>
+}
+
+title ||--o{ copy
+copy ||--o{ loan
+user ||--o{ loan : member
+title ||--o{ reservation
+user ||--o{ reservation : member
+copy |o--o| reservation : held copy
+user ||--o{ payment : member
+user ||--o{ payment : librarian
+
+note bottom of loan
+  Partial unique index: one open loan per copy
+  (copy_id WHERE return_date IS NULL).
+end note
+@enduml
