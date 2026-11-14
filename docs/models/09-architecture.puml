@@ -1,0 +1,46 @@
+@startuml architecture
+' Architecture overview: layered component diagram
+skinparam shadowing false
+skinparam componentStyle rectangle
+
+node "Librarian / Member PC" {
+  [Web browser] as browser
+}
+
+node "Library PC (localhost)" {
+  package "Presentation layer" {
+    [Flask blueprints\n(library.web)] as web
+    [Jinja2 templates + CSS] as tpl
+    [role_required\naccess guard] as guard
+  }
+  package "Business layer" {
+    [Services\n(library.services)] as svc
+    [Rules\n(business-rule values)] as rules
+    [Clock\n(SystemClock / FixedClock)] as clock
+  }
+  package "Data-access layer" {
+    [Repositories\n(library.repositories)] as repo
+    [Database\n(connection + transaction)] as db
+  }
+  database "SQLite file\nlibrary.db" as sqlite
+}
+
+browser --> web : HTTP (HTML forms)
+web --> guard
+web --> tpl : render
+web --> svc : calls
+svc --> rules
+svc --> clock
+svc --> repo : calls
+repo --> db
+db --> sqlite : SQL
+
+note right of svc
+  Only this layer contains business rules.
+  It never imports Flask, so unit tests
+  run without a web server.
+end note
+note right of repo
+  Only this layer contains SQL.
+end note
+@enduml
