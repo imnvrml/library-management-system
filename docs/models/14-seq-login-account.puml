@@ -1,0 +1,43 @@
+@startuml seq-login-account
+' SD-05 Log in, view own account, access control (UC-01, UC-10, FR-02)
+skinparam shadowing false
+autonumber
+actor Member
+boundary ":auth_bp" as auth
+boundary ":account_bp" as acc
+boundary ":circulation_bp" as circbp
+control ":role_required" as guard
+control ":AuthService" as as
+control ":MemberService" as mem
+control ":ReservationService" as res
+entity ":UserRepository" as users
+
+== Log in (UC-01) ==
+Member -> auth : POST /login (email, password)
+auth -> as : login(email, password)
+as -> users : find_by_email(email)
+alt unknown e-mail or wrong password
+  as --> auth : raise BusinessRuleError("Invalid e-mail or password")
+  auth --> Member : login page with message
+else account deactivated
+  as --> auth : raise BusinessRuleError("Account is deactivated")
+  auth --> Member : login page with message
+else valid
+  as --> auth : User
+  auth -> auth : session["user_id"] = user.id
+  auth --> Member : redirect to /account
+end
+
+== View my account (UC-10) ==
+Member -> acc : GET /account
+acc -> guard : role_required(MEMBER)
+guard --> acc : allowed
+acc -> mem : account_summary(member_id)
+acc -> res : active_of(member_id)
+acc --> Member : loans, due dates, balance,\nreservations with queue position
+
+== Access control (FR-02) ==
+Member -> circbp : GET /circulation/checkout
+circbp -> guard : role_required(LIBRARIAN)
+guard --> Member : HTTP 403 Forbidden
+@enduml

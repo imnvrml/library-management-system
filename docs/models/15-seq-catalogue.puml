@@ -1,0 +1,50 @@
+@startuml seq-catalogue
+' SD-06 Manage catalogue and search (UC-03 includes UC-15; UC-02)
+skinparam shadowing false
+autonumber
+actor Librarian
+actor Member
+boundary ":catalogue_bp" as bp
+control ":CatalogueService" as cat
+control ":ReservationService" as res
+entity ":TitleRepository" as titles
+entity ":CopyRepository" as copies
+
+== Add title (UC-03, FR-03) ==
+Librarian -> bp : POST /titles (isbn, title, author, publisher, year)
+bp -> cat : add_title(...)
+cat -> cat : is_valid_isbn(isbn)
+alt invalid ISBN, empty field or year outside 1800..current
+  cat --> bp : raise BusinessRuleError("Invalid ISBN" / field)
+  bp --> Librarian : form with message
+else valid
+  cat -> titles : find_by_isbn(isbn)
+  alt ISBN exists
+    cat --> bp : raise BusinessRuleError("ISBN already exists")
+    bp --> Librarian : form with message
+  else new
+    cat -> titles : add(title)
+    bp --> Librarian : title page
+  end
+end
+
+== Add copy (UC-03, FR-04) ==
+Librarian -> bp : POST /titles/<id>/copies (code)
+bp -> cat : add_copy(title_id, code)
+cat -> copies : find_by_code(code)
+alt code exists
+  cat --> bp : raise BusinessRuleError("Copy code already exists")
+else new code
+  cat -> copies : add(Copy(status = AVAILABLE))
+  cat -> res : serve_queue(copy)
+  note right : FR-04 AC3: goes On hold\nif someone is waiting
+  bp --> Librarian : title page with copies
+end
+
+== Search (UC-02, FR-06) ==
+Member -> bp : GET /titles?q=dune
+bp -> cat : search("dune")
+cat -> titles : search("dune")
+titles --> cat : list[TitleSummary]\n(available, total)
+bp --> Member : "Dune - 2 of 3 available"\nor "No titles found"
+@enduml

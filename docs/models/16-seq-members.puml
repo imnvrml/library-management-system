@@ -1,0 +1,63 @@
+@startuml seq-members
+' SD-07 Manage members, record payment, overdue list (UC-04, UC-11, UC-12)
+skinparam shadowing false
+autonumber
+actor Librarian
+boundary ":members_bp" as bp
+boundary ":circulation_bp" as cbp
+control ":MemberService" as mem
+control ":AuthService" as as
+control ":CirculationService" as circ
+control ":FinePolicy" as fine
+entity ":UserRepository" as users
+entity ":LoanRepository" as loans
+entity ":PaymentRepository" as pays
+
+== Register member (UC-04, FR-07) ==
+Librarian -> bp : POST /members (name, email, phone, password)
+bp -> mem : register(...)
+alt password shorter than 8
+  mem --> bp : raise BusinessRuleError("Password too short")
+else
+  mem -> users : find_by_email(email)
+  alt e-mail used
+    mem --> bp : raise BusinessRuleError("E-mail already registered")
+  else new
+    mem -> as : hash_password(password)
+    mem -> users : add(User(role = MEMBER, active))
+    bp --> Librarian : member page
+  end
+end
+
+== Deactivate member (UC-04, FR-08) ==
+Librarian -> bp : POST /members/<id>/deactivate
+bp -> mem : deactivate(member_id)
+mem -> loans : open_loans_of(member_id)
+mem -> mem : balance(member_id)
+alt open loans or balance > 0
+  mem --> bp : raise BusinessRuleError(reason)
+else
+  mem -> users : set_active(member_id, false)
+end
+
+== Record fine payment (UC-11, FR-18) ==
+Librarian -> bp : POST /members/<id>/payments (amount)
+bp -> mem : record_payment(member_id, amount_qepik, librarian_id)
+mem -> loans : total_fines(member_id)
+mem -> pays : total_paid(member_id)
+alt amount <= 0 or amount > balance
+  mem --> bp : raise BusinessRuleError("Invalid amount")
+else
+  mem -> pays : add(Payment)
+  bp --> Librarian : "New balance 0.40 AZN"
+end
+
+== Overdue list (UC-12, FR-19) ==
+Librarian -> cbp : GET /circulation/overdue
+cbp -> circ : overdue_loans()
+circ -> loans : overdue(today)
+loop each overdue loan
+  circ -> fine : fine_for(loan.due_date, today)
+end
+cbp --> Librarian : table sorted by days late
+@enduml

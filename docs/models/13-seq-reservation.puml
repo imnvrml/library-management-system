@@ -1,0 +1,55 @@
+@startuml seq-reservation
+' SD-04 Place and cancel a reservation (UC-08 includes UC-14; UC-09 includes UC-15)
+skinparam shadowing false
+autonumber
+actor Member
+boundary ":reservations_bp" as bp
+control ":ReservationService" as res
+entity ":CopyRepository" as copies
+entity ":LoanRepository" as loans
+entity ":ReservationRepository" as rrepo
+database ":Database" as db
+
+== Place reservation (UC-08) ==
+Member -> bp : POST /titles/<title_id>/reserve
+bp -> res : place(member_id, title_id)
+activate res
+res -> db : transaction() begin
+res -> res : expire_holds()
+res -> copies : count_available(title_id)
+res -> rrepo : active_of(member_id)
+res -> loans : member_has_title_on_loan(member_id, title_id)
+alt copy available, already reserved, 3 active reservations, or title on loan
+  res -> db : rollback
+  res --> bp : raise BusinessRuleError(message)
+  bp --> Member : e.g. "A copy is available - borrow it at the desk"
+else accepted
+  res -> rrepo : add(Reservation(WAITING, placed_at = now))
+  res -> db : commit
+  res --> bp : Reservation
+  bp -> res : position(reservation)
+  bp --> Member : "Reserved. Your position: 2"
+end
+deactivate res
+
+== Cancel reservation (UC-09) ==
+Member -> bp : POST /reservations/<id>/cancel
+bp -> res : cancel(reservation_id, actor)
+activate res
+res -> db : transaction() begin
+res -> rrepo : get(reservation_id)
+alt actor is a Member and not the owner
+  res -> db : rollback
+  res --> bp : raise AccessDeniedError
+  bp --> Member : HTTP 403
+else owner (or librarian)
+  res -> rrepo : update(status = CANCELLED)
+  opt reservation was READY (copy on hold)
+    res -> res : serve_queue(held copy)
+    note right : copy goes to next member\nor becomes Available (FR-16)
+  end
+  res -> db : commit
+  bp --> Member : "Reservation cancelled"
+end
+deactivate res
+@enduml
