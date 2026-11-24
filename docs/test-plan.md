@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Author** | Ramil İmanov (group M666İ5) |
-| **Version** | 1.0 (plan; results are added in the test report section) |
+| **Version** | 1.1 (plan + test report, 2026-11-25) |
 | **Date** | 2026-11-15 |
 | **Based on** | Requirements v1.1, Models v1.1 |
 
@@ -197,115 +197,115 @@ The columns *Actual* and *Result* are filled in when the tests are executed (Sec
 
 | ID | Req | Tech | Lvl | Input | Expected | Actual | Result |
 |---|---|---|---|---|---|---|---|
-| TC-FINE-01 | FR-12 | BVA | U | due 12-15, returned 12-14 (−1 day) | 0 | not run | — |
-| TC-FINE-02 | FR-12 AC1 | BVA | U | due 12-15, returned 12-15 (0) | 0 | not run | — |
-| TC-FINE-03 | FR-12 AC2 | BVA | U | due 12-15, returned 12-16 (1) | 20 | not run | — |
-| TC-FINE-04 | FR-12 | BVA | U | 49 days late | 980 | not run | — |
-| TC-FINE-05 | FR-12 AC3 | BVA | U | 50 days late | 1000 | not run | — |
-| TC-FINE-06 | FR-12 AC4 | BVA | U | 51 days late | 1000 | not run | — |
-| TC-FINE-07 | FR-12 AC4 | EP | U | 365 days late | 1000 | not run | — |
+| TC-FINE-01 | FR-12 | BVA | U | due 12-15, returned 12-14 (−1 day) | 0 | as expected | Pass |
+| TC-FINE-02 | FR-12 AC1 | BVA | U | due 12-15, returned 12-15 (0) | 0 | as expected | Pass |
+| TC-FINE-03 | FR-12 AC2 | BVA | U | due 12-15, returned 12-16 (1) | 20 | as expected | Pass |
+| TC-FINE-04 | FR-12 | BVA | U | 49 days late | 980 | as expected | Pass |
+| TC-FINE-05 | FR-12 AC3 | BVA | U | 50 days late | 1000 | as expected | Pass |
+| TC-FINE-06 | FR-12 AC4 | BVA | U | 51 days late | 1000 | as expected | Pass |
+| TC-FINE-07 | FR-12 AC4 | EP | U | 365 days late | 1000 | as expected | Pass |
 
 ### 4.2 ISBN validation (FR-03 AC2, BR-11)
 
 | ID | Req | Tech | Lvl | Input | Expected | Actual | Result |
 |---|---|---|---|---|---|---|---|
-| TC-ISBN-01 | BR-11 | EP | U | `9780306406157` | valid | not run | — |
-| TC-ISBN-02 | BR-11 | EP | U | `978-0-306-40615-7` | valid (hyphens removed) | not run | — |
-| TC-ISBN-03 | BR-11 | EP | U | `9780306406158` (wrong check digit) | invalid | not run | — |
-| TC-ISBN-04 | BR-11 | BVA | U | `978030640615` (12 digits) | invalid | not run | — |
-| TC-ISBN-05 | BR-11 | BVA | U | `97803064061570` (14 digits) | invalid | not run | — |
-| TC-ISBN-06 | BR-11 | EP | U | `978030640615X` | invalid | not run | — |
-| TC-ISBN-07 | BR-11 | EP | U | empty string | invalid | not run | — |
+| TC-ISBN-01 | BR-11 | EP | U | `9780306406157` | valid | as expected | Pass |
+| TC-ISBN-02 | BR-11 | EP | U | `978-0-306-40615-7` | valid (hyphens removed) | as expected | Pass |
+| TC-ISBN-03 | BR-11 | EP | U | `9780306406158` (wrong check digit) | invalid | as expected | Pass |
+| TC-ISBN-04 | BR-11 | BVA | U | `978030640615` (12 digits) | invalid | as expected | Pass |
+| TC-ISBN-05 | BR-11 | BVA | U | `97803064061570` (14 digits) | invalid | as expected | Pass |
+| TC-ISBN-06 | BR-11 | EP | U | `978030640615X` | invalid | as expected | Pass |
+| TC-ISBN-07 | BR-11 | EP | U | empty string | invalid | as expected | Pass |
 
 ### 4.3 Catalogue and search (FR-03 to FR-06)
 
 | ID | Req | Tech | Lvl | Input | Expected | Actual | Result |
 |---|---|---|---|---|---|---|---|
-| TC-CAT-01 | FR-03 AC1 | EP | I | add *Dune*, ISBN 9780441172719, year 1990 | title stored, found by ISBN | not run | — |
-| TC-CAT-02 | FR-03 AC3 | EP | I | add a second title with ISBN 9780441172719 | "ISBN already exists" | not run | — |
-| TC-CAT-03 | FR-03 AC4 | BVA | I | year 1799 | rejected, names "year" | not run | — |
-| TC-CAT-04 | FR-03 AC4 | BVA | I | year 1800 | accepted | not run | — |
-| TC-CAT-05 | FR-03 AC4 | BVA | I | year 2026 (current) | accepted | not run | — |
-| TC-CAT-06 | FR-03 AC4 | BVA | I | year 2027 | rejected, names "year" | not run | — |
-| TC-CAT-07 | FR-03 AC4 | EP | I | empty title | rejected, names "title" | not run | — |
-| TC-CAT-08 | FR-03 AC4 | EP | I | empty author | rejected, names "author" | not run | — |
-| TC-CAT-09 | FR-04 AC1 | ST | I | add copy C-001 to *Dune*, no reservations | copy Available; available count 0 → 1 | not run | — |
-| TC-CAT-10 | FR-04 AC2 | EP | I | add copy with existing code C-001 | "Copy code already exists" | not run | — |
-| TC-CAT-11 | FR-04 AC3 | ST | I | *Dune* has Waiting reservation by Ann; add copy C-002 | C-002 On hold for Ann; Ann's reservation Ready, deadline 12-04 | not run | — |
-| TC-CAT-12 | FR-05 AC1 | ST | I | withdraw Available copy | copy Withdrawn, not counted as available | not run | — |
-| TC-CAT-13 | FR-05 AC2 | ST | I | withdraw copy On loan | "Copy is not on the shelf" | not run | — |
-| TC-SRC-01 | FR-06 AC1 | EP | I | titles *Dune*, *Dune Messiah*, *Clean Code*; search "dune" | *Dune*, *Dune Messiah* | not run | — |
-| TC-SRC-02 | FR-06 | EP | I | search "herbert" (author) | both Dune titles | not run | — |
-| TC-SRC-03 | FR-06 | EP | I | search "9780132350884" | *Clean Code* | not run | — |
-| TC-SRC-04 | FR-06 AC2 | EP | S | search "zzz" | page shows "No titles found" | not run | — |
-| TC-SRC-05 | FR-06 AC3 | EP | I | *Dune* with 3 copies, 1 On loan | "2 of 3 available" (available 2, total 3) | not run | — |
-| TC-SRC-06 | FR-06 AC4 | EP | I | empty search text | all 3 titles in alphabetical order | not run | — |
+| TC-CAT-01 | FR-03 AC1 | EP | I | add *Dune*, ISBN 9780441172719, year 1990 | title stored, found by ISBN | as expected | Pass |
+| TC-CAT-02 | FR-03 AC3 | EP | I | add a second title with ISBN 9780441172719 | "ISBN already exists" | as expected | Pass |
+| TC-CAT-03 | FR-03 AC4 | BVA | I | year 1799 | rejected, names "year" | as expected | Pass |
+| TC-CAT-04 | FR-03 AC4 | BVA | I | year 1800 | accepted | as expected | Pass |
+| TC-CAT-05 | FR-03 AC4 | BVA | I | year 2026 (current) | accepted | as expected | Pass |
+| TC-CAT-06 | FR-03 AC4 | BVA | I | year 2027 | rejected, names "year" | as expected | Pass |
+| TC-CAT-07 | FR-03 AC4 | EP | I | empty title | rejected, names "title" | as expected | Pass |
+| TC-CAT-08 | FR-03 AC4 | EP | I | empty author | rejected, names "author" | as expected | Pass |
+| TC-CAT-09 | FR-04 AC1 | ST | I | add copy C-001 to *Dune*, no reservations | copy Available; available count 0 → 1 | as expected | Pass |
+| TC-CAT-10 | FR-04 AC2 | EP | I | add copy with existing code C-001 | "Copy code already exists" | as expected | Pass |
+| TC-CAT-11 | FR-04 AC3 | ST | I | *Dune* has Waiting reservation by Ann; add copy C-002 | C-002 On hold for Ann; Ann's reservation Ready, deadline 12-04 | as expected | Pass |
+| TC-CAT-12 | FR-05 AC1 | ST | I | withdraw Available copy | copy Withdrawn, not counted as available | as expected | Pass |
+| TC-CAT-13 | FR-05 AC2 | ST | I | withdraw copy On loan | "Copy is not on the shelf" | as expected | Pass |
+| TC-SRC-01 | FR-06 AC1 | EP | I | titles *Dune*, *Dune Messiah*, *Clean Code*; search "dune" | *Dune*, *Dune Messiah* | as expected | Pass |
+| TC-SRC-02 | FR-06 | EP | I | search "herbert" (author) | both Dune titles | as expected | Pass |
+| TC-SRC-03 | FR-06 | EP | I | search "9780132350884" | *Clean Code* | as expected | Pass |
+| TC-SRC-04 | FR-06 AC2 | EP | S | search "zzz" | page shows "No titles found" | as expected | Pass |
+| TC-SRC-05 | FR-06 AC3 | EP | I | *Dune* with 3 copies, 1 On loan | "2 of 3 available" (available 2, total 3) | as expected | Pass |
+| TC-SRC-06 | FR-06 AC4 | EP | I | empty search text | all 3 titles in alphabetical order | as expected | Pass |
 
 ### 4.4 Accounts, access and members (FR-01, FR-02, FR-07, FR-08)
 
 | ID | Req | Tech | Lvl | Input | Expected | Actual | Result |
 |---|---|---|---|---|---|---|---|
-| TC-AUTH-01 | FR-01 AC1 | EP | S | Ann logs in with correct password | redirect to /account; Lib → librarian dashboard | not run | — |
-| TC-AUTH-02 | FR-01 AC2 | EP | S | Ann with wrong password | "Invalid e-mail or password"; no session | not run | — |
-| TC-AUTH-03 | FR-01 AC2 | EP | S | unknown e-mail | same message as TC-AUTH-02; no session | not run | — |
-| TC-AUTH-04 | FR-01 AC3 | EP | I | Cem (deactivated) with correct password | "Account is deactivated" | not run | — |
-| TC-AUTH-05 | FR-01 AC4 | ST | S | Ann logs out, then opens /account | redirect to /login | not run | — |
-| TC-ACC-01 | FR-02 AC1, NFR-03 | EP | S | Ann calls **every** librarian route (parametrised) | HTTP 403 for each | not run | — |
-| TC-ACC-02 | FR-02 AC2, NFR-03 | EP | S | not logged in, calls every protected route | redirect to /login for each | not run | — |
-| TC-ACC-03 | FR-02 AC3 | EP | S | Ann posts renew for Ben's loan | HTTP 403; Ben's loan unchanged | not run | — |
-| TC-ACC-04 | FR-02 AC3 | EP | S | Ann cancels Ben's reservation | HTTP 403; reservation unchanged | not run | — |
-| TC-ACC-05 | FR-02 | EP | S | Lib calls every librarian route | HTTP 200 for each | not run | — |
-| TC-MEM-01 | FR-07 AC1 | EP | I | register Dan, unused e-mail, password 8 chars | active Member; can log in | not run | — |
-| TC-MEM-02 | FR-07 AC2 | EP | I | register with Ann's e-mail | "E-mail already registered" | not run | — |
-| TC-MEM-03 | FR-07 AC3 | BVA | I | password of 7 characters | "Password too short" | not run | — |
-| TC-MEM-04 | FR-07 AC3 | BVA | I | password of 8 characters | accepted | not run | — |
-| TC-MEM-05 | FR-08 AC1 | DT | I | deactivate Ben: no loans, balance 0 | Ben inactive; cannot log in | not run | — |
-| TC-MEM-06 | FR-08 AC2 | DT | I | deactivate Ann with 1 open loan | refused, reason "open loans" | not run | — |
-| TC-MEM-07 | FR-08 AC2 | DT | I | deactivate Ann with balance 20 | refused, reason "outstanding balance" | not run | — |
+| TC-AUTH-01 | FR-01 AC1 | EP | S | Ann logs in with correct password | redirect to /account; Lib → librarian dashboard | as expected | Pass |
+| TC-AUTH-02 | FR-01 AC2 | EP | S | Ann with wrong password | "Invalid e-mail or password"; no session | as expected | Pass |
+| TC-AUTH-03 | FR-01 AC2 | EP | S | unknown e-mail | same message as TC-AUTH-02; no session | as expected | Pass |
+| TC-AUTH-04 | FR-01 AC3 | EP | I | Cem (deactivated) with correct password | "Account is deactivated" | as expected | Pass |
+| TC-AUTH-05 | FR-01 AC4 | ST | S | Ann logs out, then opens /account | redirect to /login | as expected | Pass |
+| TC-ACC-01 | FR-02 AC1, NFR-03 | EP | S | Ann calls **every** librarian route (parametrised) | HTTP 403 for each | as expected | Pass |
+| TC-ACC-02 | FR-02 AC2, NFR-03 | EP | S | not logged in, calls every protected route | redirect to /login for each | as expected | Pass |
+| TC-ACC-03 | FR-02 AC3 | EP | S | Ann posts renew for Ben's loan | HTTP 403; Ben's loan unchanged | as expected | Pass |
+| TC-ACC-04 | FR-02 AC3 | EP | S | Ann cancels Ben's reservation | HTTP 403; reservation unchanged | as expected | Pass |
+| TC-ACC-05 | FR-02 | EP | S | Lib calls every librarian route | never 403: pages 200, actions 200 or 302 | as expected | Pass |
+| TC-MEM-01 | FR-07 AC1 | EP | I | register Dan, unused e-mail, password 8 chars | active Member; can log in | as expected | Pass |
+| TC-MEM-02 | FR-07 AC2 | EP | I | register with Ann's e-mail | "E-mail already registered" | as expected | Pass |
+| TC-MEM-03 | FR-07 AC3 | BVA | I | password of 7 characters | "Password too short" | as expected | Pass |
+| TC-MEM-04 | FR-07 AC3 | BVA | I | password of 8 characters | accepted | as expected | Pass |
+| TC-MEM-05 | FR-08 AC1 | DT | I | deactivate Ben: no loans, balance 0 | Ben inactive; cannot log in | as expected | Pass |
+| TC-MEM-06 | FR-08 AC2 | DT | I | deactivate Ann with 1 open loan | refused, reason "open loans" | as expected | Pass |
+| TC-MEM-07 | FR-08 AC2 | DT | I | deactivate Ann with balance 20 | refused, reason "outstanding balance" | as expected | Pass |
 
 ### 4.5 Checkout (FR-09, DT-1)
 
 | ID | Req | Tech | Lvl | Input | Expected | Actual | Result |
 |---|---|---|---|---|---|---|---|
-| TC-CHK-01 | FR-09 | DT R1 | U | active, 0 loans, no overdue, balance 0, copy Available | None (allowed) | not run | — |
-| TC-CHK-02 | FR-09 AC7 | DT R2 | U | inactive member | "Account is deactivated" | not run | — |
-| TC-CHK-03 | FR-09 AC2 | DT R3, BVA | U | 5 active loans | "Loan limit reached (5)" | not run | — |
-| TC-CHK-04 | FR-09 AC3 | DT R4 | U | has an overdue loan | "Member has overdue items" | not run | — |
-| TC-CHK-05 | FR-09 AC4 | DT R5, BVA | U | balance 501 | "Outstanding fines exceed 5.00 AZN" | not run | — |
-| TC-CHK-06 | FR-09 AC5 | DT R6 | U | copy On loan | "Copy is not available" | not run | — |
-| TC-CHK-07 | FR-09 AC5 | DT R7 | U | copy Withdrawn | "Copy is not available" | not run | — |
-| TC-CHK-08 | FR-09 AC6 | DT R8 | U | copy On hold for Ben, borrower Ann | "Copy is held for another member" | not run | — |
-| TC-CHK-09 | FR-09 AC6 | DT R9 | U | copy On hold for Ann, borrower Ann | None (allowed) | not run | — |
-| TC-CHK-10 | FR-09 | BVA | U | 4 active loans | None (allowed) | not run | — |
-| TC-CHK-11 | FR-09 AC4 | BVA | U | balance 500 | None (allowed) | not run | — |
-| TC-CHK-12 | FR-09 | DT | U | inactive + 5 loans + copy On loan | "Account is deactivated" (first failing rule) | not run | — |
-| TC-CHK-13 | FR-09 AC1 | ST | I | Ann borrows C-001 on 2026-12-01 | loan due 2026-12-15; copy On loan | not run | — |
-| TC-CHK-14 | FR-09 AC6, FR-14 AC2 | ST | I | C-001 On hold for Ann; Ann borrows it | loan created; reservation Fulfilled; copy On loan | not run | — |
-| TC-CHK-15 | FR-09 AC3, BR-06 | BVA | I | Ann has a loan due 2026-11-30 | "Member has overdue items" | not run | — |
-| TC-CHK-16 | BR-06 | BVA | I | Ann has a loan due 2026-12-01 (today) | checkout allowed | not run | — |
-| TC-CHK-17 | FR-09 | EP | I | copy code "NOPE" | "Copy not found"; nothing saved | not run | — |
+| TC-CHK-01 | FR-09 | DT R1 | U | active, 0 loans, no overdue, balance 0, copy Available | None (allowed) | as expected | Pass |
+| TC-CHK-02 | FR-09 AC7 | DT R2 | U | inactive member | "Account is deactivated" | as expected | Pass |
+| TC-CHK-03 | FR-09 AC2 | DT R3, BVA | U | 5 active loans | "Loan limit reached (5)" | as expected | Pass |
+| TC-CHK-04 | FR-09 AC3 | DT R4 | U | has an overdue loan | "Member has overdue items" | as expected | Pass |
+| TC-CHK-05 | FR-09 AC4 | DT R5, BVA | U | balance 501 | "Outstanding fines exceed 5.00 AZN" | as expected | Pass |
+| TC-CHK-06 | FR-09 AC5 | DT R6 | U | copy On loan | "Copy is not available" | as expected | Pass |
+| TC-CHK-07 | FR-09 AC5 | DT R7 | U | copy Withdrawn | "Copy is not available" | as expected | Pass |
+| TC-CHK-08 | FR-09 AC6 | DT R8 | U | copy On hold for Ben, borrower Ann | "Copy is held for another member" | as expected | Pass |
+| TC-CHK-09 | FR-09 AC6 | DT R9 | U | copy On hold for Ann, borrower Ann | None (allowed) | as expected | Pass |
+| TC-CHK-10 | FR-09 | BVA | U | 4 active loans | None (allowed) | as expected | Pass |
+| TC-CHK-11 | FR-09 AC4 | BVA | U | balance 500 | None (allowed) | as expected | Pass |
+| TC-CHK-12 | FR-09 | DT | U | inactive + 5 loans + copy On loan | "Account is deactivated" (first failing rule) | as expected | Pass |
+| TC-CHK-13 | FR-09 AC1 | ST | I | Ann borrows C-001 on 2026-12-01 | loan due 2026-12-15; copy On loan | as expected | Pass |
+| TC-CHK-14 | FR-09 AC6, FR-14 AC2 | ST | I | C-001 On hold for Ann; Ann borrows it | loan created; reservation Fulfilled; copy On loan | as expected | Pass |
+| TC-CHK-15 | FR-09 AC3, BR-06 | BVA | I | Ann has a loan due 2026-11-30 | "Member has overdue items" | as expected | Pass |
+| TC-CHK-16 | BR-06 | BVA | I | Ann has a loan due 2026-12-01 (today) | checkout allowed | as expected | Pass |
+| TC-CHK-17 | FR-09 | EP | I | copy code "NOPE" | "Copy not found"; nothing saved | as expected | Pass |
 
 ### 4.6 Return, holds and expiry (FR-10, FR-14, FR-15, FR-16)
 
 | ID | Req | Tech | Lvl | Input | Expected | Actual | Result |
 |---|---|---|---|---|---|---|---|
-| TC-RET-01 | FR-10 AC1 | ST | I | loan due 12-15, returned 12-15, no reservations | loan closed, fine 0, copy Available | not run | — |
-| TC-RET-02 | FR-10 AC2, FR-14 AC1 | ST | I | Waiting: Ann (first), Ben; copy returned 12-01 | copy On hold for Ann; Ann Ready, deadline 12-04; Ben Waiting, position 1 | not run | — |
-| TC-RET-03 | FR-10 AC3 | ST | I | return an Available copy | "Copy is not on loan" | not run | — |
-| TC-RET-04 | FR-10, FR-12 | BVA | I | loan due 11-29, returned 12-01 | fine 40 stored; Ann's balance 40 | not run | — |
-| TC-EXP-01 | FR-15 AC1 | ST, BVA | I | Ann's hold deadline 12-18; expiry run 12-19; no other reservation | Ann Expired; copy Available | not run | — |
-| TC-EXP-02 | FR-15 AC2 | ST | I | as EXP-01 plus Ben Waiting | copy On hold for Ben, deadline 12-22 | not run | — |
-| TC-EXP-03 | FR-15 AC3 | BVA | I | expiry run on 12-18 (deadline day) | nothing changes | not run | — |
-| TC-EXP-04 | FR-15, A-05 | ST | I | as EXP-02, but no explicit expiry: Ben checks out the copy on 12-19 | checkout runs expiry first and succeeds for Ben | not run | — |
-| TC-CAN-01 | FR-16 AC1 | ST | I | Waiting: Ann, Ben, Cem*; Ann cancels | Ann Cancelled; Ben position 1 | not run | — |
-| TC-CAN-02 | FR-16 | ST | I | Ann Ready (copy held), Ben Waiting; Ann cancels | copy On hold for Ben | not run | — |
-| TC-CAN-03 | FR-16 | ST | I | Ann Ready, queue empty; Ann cancels | copy Available | not run | — |
-| TC-STR-01 | FR-16 | ST | I | cancel a Fulfilled reservation | "Reservation is not active" | not run | — |
-| TC-STR-02 | FR-16 | ST | I | cancel an Expired reservation | "Reservation is not active" | not run | — |
-| TC-STC-01 | FR-05 AC2 | ST | I | withdraw a copy On hold | "Copy is not on the shelf" | not run | — |
-| TC-STC-02 | FR-10 AC3 | ST | I | return a copy On hold | "Copy is not on loan" | not run | — |
-| TC-STC-03 | FR-10 AC3 | ST | I | return a Withdrawn copy | "Copy is not on loan" | not run | — |
-| TC-STC-04 | FR-09, FR-10, FR-14, FR-15 | ST (1-switch) | I | one copy: Ann borrows → Ben, Cem* reserve → Ann returns → Ben's hold expires → Cem borrows → Cem returns | states: On loan → On hold (Ben) → On hold (Cem) → On loan → Available | not run | — |
+| TC-RET-01 | FR-10 AC1 | ST | I | loan due 12-15, returned 12-15, no reservations | loan closed, fine 0, copy Available | as expected | Pass |
+| TC-RET-02 | FR-10 AC2, FR-14 AC1 | ST | I | Waiting: Ann (first), Ben; copy returned 12-01 | copy On hold for Ann; Ann Ready, deadline 12-04; Ben Waiting, position 1 | as expected | Pass |
+| TC-RET-03 | FR-10 AC3 | ST | I | return an Available copy | "Copy is not on loan" | as expected | Pass |
+| TC-RET-04 | FR-10, FR-12 | BVA | I | loan due 11-29, returned 12-01 | fine 40 stored; Ann's balance 40 | as expected | Pass |
+| TC-EXP-01 | FR-15 AC1 | ST, BVA | I | Ann's hold deadline 12-18; expiry run 12-19; no other reservation | Ann Expired; copy Available | as expected | Pass |
+| TC-EXP-02 | FR-15 AC2 | ST | I | as EXP-01 plus Ben Waiting | copy On hold for Ben, deadline 12-22 | as expected | Pass |
+| TC-EXP-03 | FR-15 AC3 | BVA | I | expiry run on 12-18 (deadline day) | nothing changes | as expected | Pass |
+| TC-EXP-04 | FR-15, A-05 | ST | I | as EXP-02, but no explicit expiry: Ben checks out the copy on 12-19 | checkout runs expiry first and succeeds for Ben | as expected | Pass |
+| TC-CAN-01 | FR-16 AC1 | ST | I | Waiting: Ann, Ben, Cem*; Ann cancels | Ann Cancelled; Ben position 1 | as expected | Pass |
+| TC-CAN-02 | FR-16 | ST | I | Ann Ready (copy held), Ben Waiting; Ann cancels | copy On hold for Ben | as expected | Pass |
+| TC-CAN-03 | FR-16 | ST | I | Ann Ready, queue empty; Ann cancels | copy Available | as expected | Pass |
+| TC-STR-01 | FR-16 | ST | I | cancel a Fulfilled reservation | "Reservation is not active" | as expected | Pass |
+| TC-STR-02 | FR-16 | ST | I | cancel an Expired reservation | "Reservation is not active" | as expected | Pass |
+| TC-STC-01 | FR-05 AC2 | ST | I | withdraw a copy On hold | "Copy is not on the shelf" | as expected | Pass |
+| TC-STC-02 | FR-10 AC3 | ST | I | return a copy On hold | "Copy is not on loan" | as expected | Pass |
+| TC-STC-03 | FR-10 AC3 | ST | I | return a Withdrawn copy | "Copy is not on loan" | as expected | Pass |
+| TC-STC-04 | FR-09, FR-10, FR-14, FR-15 | ST (1-switch) | I | one copy: Ann borrows → Ben, Cem* reserve → Ann returns → Ben's hold expires → Cem borrows → Cem returns | states: On loan → On hold (Ben) → On hold (Cem) → On loan → Available | as expected | Pass |
 
 \* In TC-CAN-01 and TC-STC-04 "Cem" is an active member created for the test (the standard Cem is deactivated).
 
@@ -313,69 +313,69 @@ The columns *Actual* and *Result* are filled in when the tests are executed (Sec
 
 | ID | Req | Tech | Lvl | Input | Expected | Actual | Result |
 |---|---|---|---|---|---|---|---|
-| TC-REN-01 | FR-11 | DT R1 | U | count 0, due 12-15, today 12-10, not reserved | None (allowed) | not run | — |
-| TC-REN-02 | FR-11 | BVA | U | count 1 | None (allowed) | not run | — |
-| TC-REN-03 | FR-11 AC2 | DT R2, BVA | U | count 2 | "Maximum renewals reached (2)" | not run | — |
-| TC-REN-04 | FR-11 AC3 | DT R3, BVA | U | due 11-30, today 12-01 | "Overdue loans cannot be renewed" | not run | — |
-| TC-REN-05 | FR-11 | BVA | U | due 12-01, today 12-01 | None (allowed) | not run | — |
-| TC-REN-06 | FR-11 AC4 | DT R4 | U | reserved by another member | "Title is reserved by another member" | not run | — |
-| TC-REN-07 | FR-11 AC1 | ST | I | loan due 12-15, count 0, renewed on 12-10 | due 12-29, count 1 | not run | — |
-| TC-REN-08 | FR-02 AC3 | EP | I | Ann renews Ben's loan | AccessDeniedError; loan unchanged | not run | — |
-| TC-REN-09 | FR-11 AC4, BR-04 | DT | I | Ben has a Waiting reservation for the title; Ann renews | "Title is reserved by another member" | not run | — |
+| TC-REN-01 | FR-11 | DT R1 | U | count 0, due 12-15, today 12-10, not reserved | None (allowed) | as expected | Pass |
+| TC-REN-02 | FR-11 | BVA | U | count 1 | None (allowed) | as expected | Pass |
+| TC-REN-03 | FR-11 AC2 | DT R2, BVA | U | count 2 | "Maximum renewals reached (2)" | as expected | Pass |
+| TC-REN-04 | FR-11 AC3 | DT R3, BVA | U | due 11-30, today 12-01 | "Overdue loans cannot be renewed" | as expected | Pass |
+| TC-REN-05 | FR-11 | BVA | U | due 12-01, today 12-01 | None (allowed) | as expected | Pass |
+| TC-REN-06 | FR-11 AC4 | DT R4 | U | reserved by another member | "Title is reserved by another member" | as expected | Pass |
+| TC-REN-07 | FR-11 AC1 | ST | I | loan due 12-15, count 0, renewed on 12-10 | due 12-29, count 1 | as expected | Pass |
+| TC-REN-08 | FR-02 AC3 | EP | I | Ann renews Ben's loan | AccessDeniedError; loan unchanged | as expected | Pass |
+| TC-REN-09 | FR-11 AC4, BR-04 | DT | I | Ben has a Waiting reservation for the title; Ann renews | "Title is reserved by another member" | as expected | Pass |
 
 ### 4.8 Reservation (FR-13, DT-3)
 
 | ID | Req | Tech | Lvl | Input | Expected | Actual | Result |
 |---|---|---|---|---|---|---|---|
-| TC-RES-01 | FR-13 | DT R1 | U | available 0, not reserved, not on loan, active 0 | None (allowed) | not run | — |
-| TC-RES-02 | FR-13 AC2 | DT R2 | U | available 1 | "A copy is available — borrow it at the desk" | not run | — |
-| TC-RES-03 | FR-13 AC3 | DT R3 | U | already reserved | "You already reserved this title" | not run | — |
-| TC-RES-04 | FR-13 AC5 | DT R4 | U | title on loan to member | "You already have this title on loan" | not run | — |
-| TC-RES-05 | FR-13 AC4 | DT R5, BVA | U | active 3 | "Reservation limit reached (3)" | not run | — |
-| TC-RES-06 | FR-13 | BVA | U | active 2 | None (allowed) | not run | — |
-| TC-RES-07 | FR-13 AC1, FR-14 | ST | I | all copies of *Dune* on loan; Ann then Ben reserve | Ann Waiting position 1; Ben position 2 | not run | — |
-| TC-RES-08 | FR-13 | EP | I | only copy On hold for Ben; Ann reserves | accepted (no Available copy) | not run | — |
+| TC-RES-01 | FR-13 | DT R1 | U | available 0, not reserved, not on loan, active 0 | None (allowed) | as expected | Pass |
+| TC-RES-02 | FR-13 AC2 | DT R2 | U | available 1 | "A copy is available — borrow it at the desk" | as expected | Pass |
+| TC-RES-03 | FR-13 AC3 | DT R3 | U | already reserved | "You already reserved this title" | as expected | Pass |
+| TC-RES-04 | FR-13 AC5 | DT R4 | U | title on loan to member | "You already have this title on loan" | as expected | Pass |
+| TC-RES-05 | FR-13 AC4 | DT R5, BVA | U | active 3 | "Reservation limit reached (3)" | as expected | Pass |
+| TC-RES-06 | FR-13 | BVA | U | active 2 | None (allowed) | as expected | Pass |
+| TC-RES-07 | FR-13 AC1, FR-14 | ST | I | all copies of *Dune* on loan; Ann then Ben reserve | Ann Waiting position 1; Ben position 2 | as expected | Pass |
+| TC-RES-08 | FR-13 | EP | I | only copy On hold for Ben; Ann reserves | accepted (no Available copy) | as expected | Pass |
 
 ### 4.9 Account page, payments and overdue list (FR-17, FR-18, FR-19)
 
 | ID | Req | Tech | Lvl | Input | Expected | Actual | Result |
 |---|---|---|---|---|---|---|---|
-| TC-ACCT-01 | FR-17 AC1 | UC | S | Ann: 2 open loans, fines 40 | page shows both loans with due dates and "0.40 AZN" | not run | — |
-| TC-ACCT-02 | FR-17, NFR-06 | EP | S | Ann is 2nd in a queue behind Ben | page shows "position 2"; Ben's name not shown | not run | — |
-| TC-PAY-01 | FR-18 AC1 | EP | U | amount 60, balance 100 | None (allowed) | not run | — |
-| TC-PAY-02 | FR-18 AC2 | BVA | U | amount 0 | "Amount must be positive" | not run | — |
-| TC-PAY-03 | FR-18 AC2 | BVA | U | amount 101, balance 100 | "Amount exceeds balance" | not run | — |
-| TC-PAY-04 | FR-18 | BVA | U | amount 100, balance 100 | None (allowed) | not run | — |
-| TC-PAY-05 | FR-18 | BVA | U | amount 1 | None (allowed) | not run | — |
-| TC-PAY-06 | FR-18 AC1 | EP | I | balance 100; record 60 | balance 40 | not run | — |
-| TC-OVD-01 | FR-19 | EP | I | loans due 11-21 (10 days) and 11-28 (3 days) | listed: 10 days (200) first, then 3 days (60) | not run | — |
-| TC-OVD-02 | FR-19 | BVA | I | loan due 12-01 (today) | not listed | not run | — |
+| TC-ACCT-01 | FR-17 AC1 | UC | S | Ann: 2 open loans, fines 40 | page shows both loans with due dates and "0.40 AZN" | as expected | Pass |
+| TC-ACCT-02 | FR-17, NFR-06 | EP | S | Ann is 2nd in a queue behind Ben | page shows "position 2"; Ben's name not shown | as expected | Pass |
+| TC-PAY-01 | FR-18 AC1 | EP | U | amount 60, balance 100 | None (allowed) | as expected | Pass |
+| TC-PAY-02 | FR-18 AC2 | BVA | U | amount 0 | "Amount must be positive" | as expected | Pass |
+| TC-PAY-03 | FR-18 AC2 | BVA | U | amount 101, balance 100 | "Amount exceeds balance" | as expected | Pass |
+| TC-PAY-04 | FR-18 | BVA | U | amount 100, balance 100 | None (allowed) | as expected | Pass |
+| TC-PAY-05 | FR-18 | BVA | U | amount 1 | None (allowed) | as expected | Pass |
+| TC-PAY-06 | FR-18 AC1 | EP | I | balance 100; record 60 | balance 40 | as expected | Pass |
+| TC-OVD-01 | FR-19 | EP | I | loans due 11-21 (10 days) and 11-28 (3 days) | listed: 10 days (200) first, then 3 days (60) | as expected | Pass |
+| TC-OVD-02 | FR-19 | BVA | I | loan due 12-01 (today) | not listed | as expected | Pass |
 
 ### 4.10 Use-case-based system tests (UC-05 to UC-08)
 
 | ID | Req | Tech | Lvl | Input | Expected | Actual | Result |
 |---|---|---|---|---|---|---|---|
-| TC-UC05-01 | FR-09 | UC | S | Lib posts checkout form: Ann, C-001 | page shows "due 2026-12-15" | not run | — |
-| TC-UC05-02 | FR-09 AC2 | UC | S | Ann has 5 loans; Lib posts checkout | page shows "Loan limit reached (5)"; no new loan | not run | — |
-| TC-UC06-01 | FR-10, FR-12 | UC | S | Lib returns C-001, 2 days late | page shows fine "0.40 AZN" | not run | — |
-| TC-UC06-02 | FR-10 AC2 | UC | S | Ben waiting; Lib returns C-001 | page says copy is on hold for the next member | not run | — |
-| TC-UC07-01 | FR-11 | UC | S | Ann clicks Renew on own loan | page shows new due date | not run | — |
-| TC-UC07-02 | FR-02 AC3 | UC | S | Ann posts renew for Ben's loan id | HTTP 403 | not run | — |
-| TC-UC08-01 | FR-13 | UC | S | Ann reserves *Dune* (all on loan) | page shows "position 1" | not run | — |
-| TC-UC08-02 | FR-13 AC2 | UC | S | Ann reserves title with a copy on the shelf | page shows "A copy is available — borrow it at the desk" | not run | — |
+| TC-UC05-01 | FR-09 | UC | S | Lib posts checkout form: Ann, C-001 | page shows "due 2026-12-15" | as expected | Pass |
+| TC-UC05-02 | FR-09 AC2 | UC | S | Ann has 5 loans; Lib posts checkout | page shows "Loan limit reached (5)"; no new loan | as expected | Pass |
+| TC-UC06-01 | FR-10, FR-12 | UC | S | Lib returns C-001, 2 days late | page shows fine "0.40 AZN" | as expected | Pass |
+| TC-UC06-02 | FR-10 AC2 | UC | S | Ben waiting; Lib returns C-001 | page says copy is on hold for the next member | as expected | Pass |
+| TC-UC07-01 | FR-11 | UC | S | Ann clicks Renew on own loan | page shows new due date | as expected | Pass |
+| TC-UC07-02 | FR-02 AC3 | UC | S | Ann posts renew for Ben's loan id | HTTP 403 | as expected | Pass |
+| TC-UC08-01 | FR-13 | UC | S | Ann reserves *Dune* (all on loan) | page shows "position 1" | as expected | Pass |
+| TC-UC08-02 | FR-13 AC2 | UC | S | Ann reserves title with a copy on the shelf | page shows "A copy is available — borrow it at the desk" | as expected | Pass |
 
 ### 4.11 Non-functional tests
 
 | ID | Req | Tech | Lvl | Input | Expected | Actual | Result |
 |---|---|---|---|---|---|---|---|
-| TC-NFR-01 | NFR-01 | — | I | 1,000 titles, 3,000 copies; 100 random searches | 95th percentile ≤ 1 s | not run | — |
-| TC-NFR-02 | NFR-02 | EP | I | register member with password "secret123" | stored hash ≠ password; starts with `scrypt:` or `pbkdf2:`; no column contains "secret123" | not run | — |
-| TC-NFR-03 | NFR-03 | — | S | list of all routes vs routes covered by TC-ACC-01/02 | every librarian route is covered | not run | — |
-| TC-NFR-04 | NFR-04 | — | I | inject an error in `serve_queue` during a return | loan still open, copy still On loan, no reservation changed | not run | — |
-| TC-NFR-05 | NFR-05 | — | M | 2 people who never used the system: checkout + return | each finishes in ≤ 2 min with on-screen labels only | not run | — |
-| TC-NFR-06 | NFR-06 | — | I | inspect `user` table columns | only id, email, password_hash, full_name, phone, role, is_active, created_at | not run | — |
-| TC-NFR-07 | NFR-07 | — | — | coverage report of `library/services` | ≥ 90 % statements | not run | — |
-| TC-NFR-08 | NFR-08 | — | — | fresh clone, new venv, `run_tests` | install + start in ≤ 5 commands; suite ≤ 30 s | not run | — |
+| TC-NFR-01 | NFR-01 | — | I | 1,000 titles, 3,000 copies; 100 random searches | 95th percentile ≤ 1 s | as expected | Pass |
+| TC-NFR-02 | NFR-02 | EP | I | register member with password "secret123" | stored hash ≠ password; starts with `scrypt:` or `pbkdf2:`; no column contains "secret123" | as expected | Pass |
+| TC-NFR-03 | NFR-03 | — | S | list of all routes vs routes covered by TC-ACC-01/02 | every librarian route is covered | as expected | Pass |
+| TC-NFR-04 | NFR-04 | — | I | inject an error in `serve_queue` during a return | loan still open, copy still On loan, no reservation changed | as expected | Pass |
+| TC-NFR-05 | NFR-05 | — | M | 2 people who never used the system: checkout + return | each finishes in ≤ 2 min with on-screen labels only | Not run yet: manual walkthrough with 2 people is planned before submission | Not run |
+| TC-NFR-06 | NFR-06 | — | I | inspect `user` table columns | only id, email, password_hash, full_name, phone, role, is_active, created_at | as expected | Pass |
+| TC-NFR-07 | NFR-07 | — | — | coverage report of `library/services` | ≥ 90 % statements | Coverage of library/services 87–100 % per module, 95 % total (section 5.3) | Pass |
+| TC-NFR-08 | NFR-08 | — | — | fresh clone, new venv, `run_tests` | install + start in ≤ 5 commands; suite ≤ 30 s | CI installs from requirements.txt and runs the suite in < 20 s; install + start = 5 commands (README) | Pass |
 
 ### 4.12 Summary
 
@@ -397,12 +397,70 @@ Techniques used: EP, BVA, DT, ST and UC (five; the course requires at least thre
 
 ## 5. Test report
 
-*To be completed after execution (step 5): summary of results, failed tests, coverage report and comment.*
+### 5.1 Execution summary
+
+| Item | Value |
+|---|---|
+| Date of the final run | 2026-11-25 (and on every push in GitHub Actions) |
+| Command | `python run_tests.py` (results copied into section 4 by `python scripts/trace.py`) |
+| Environment | Windows 11 + Python 3.12.10 locally; Ubuntu + Python 3.12 in CI |
+| Test cases in the plan | 127 |
+| Automated test cases | 124 (all pass) |
+| Executed test functions / parameter sets | 153 (all pass), of which 29 are technical tests without a test case ID (listed in `docs/traceability.md` §3) |
+| Measured, not a test function | TC-NFR-07 (coverage), TC-NFR-08 (install and run time) — both pass |
+| Not run | TC-NFR-05 (manual usability walkthrough) — planned before submission |
+| Duration of the whole suite | 4–10 s locally, < 20 s in CI (NFR-08 limit: 30 s) |
+| NFR-01 search time | p95 = 7.1 ms for 1,000 titles / 3,000 copies on the development laptop (limit 1 s) |
+
+**Exit criteria (section 2.6):** all Must test cases executed and passing — met; ≥ 95 % of automated test
+cases pass — met (100 %); no open Critical/High defect — met; service coverage ≥ 90 % — met (see 5.3);
+usability walkthrough — **not yet met** (TC-NFR-05).
+
+### 5.2 Changes to test cases during execution
+- **TC-ACC-05:** the expected result "HTTP 200 for each" only holds for pages (GET). Librarian *actions*
+  (POST) answer with a redirect (302) after showing a message. The test now expects 200 for GET and 200/302 for
+  POST; the important property — never 403 for a librarian — is unchanged.
+- **TC-NFR-01:** implemented with a fixed random seed so that the 100 searches are the same on every run.
+
+### 5.3 Code coverage
+
+Statement and branch coverage measured with pytest-cov on the full suite (`htmlcov/index.html`):
+
+| Layer | Modules | Coverage |
+|---|---|---|
+| Business logic | `services/policies.py` 100 %, `auth.py` 100 %, `circulation.py` 94 %, `reservations.py` 92 %, `catalogue.py` 90 %, `members.py` 87 % | ≥ 90 % in total (NFR-07 met) |
+| Data access | `repositories/__init__.py` 96 %, `db.py` 93 % | — |
+| Presentation | `web/*.py` 87–100 % | — |
+| **Whole system** | 1,047 statements, 190 branches | **95 %** |
+
+**What coverage tells us and what it does not.** Coverage shows which lines and branches were *executed* by at
+least one test. The uncovered lines are mostly defensive branches such as "Title not found" or "Member not
+found" that the user interface cannot reach with normal use. High coverage does **not** prove the code is
+correct: a line can run without any assertion checking its effect, and coverage cannot reveal a requirement
+that was never coded (for example the missing FR-04 rule found in review, D-03, would not have shown up as a
+coverage gap). That is why the test cases were derived from the requirements with systematic techniques, and why
+the traceability matrix, not the coverage number, is used to decide whether every requirement is tested.
+
+### 5.4 Observations
+- All service-level tests passed the first time they were run after the code was written. The test-first order
+  is visible in Git: every feature branch starts with a `test: … (red)` commit.
+- The system tests found one real defect in the web layer (D-01); a manual run found another one in the demo data
+  (D-02). Both were fixed and covered by tests.
 
 ## 6. Defect log
 
-*To be completed during implementation and testing.*
+Every problem found during design, implementation and testing, including problems in documents, tests and
+the build. Severity levels: section 2.7.
 
-| ID | Date | Found by (test / review / use) | Description | Severity | Fix | Commit |
+| ID | Date | Found by | Description | Severity | Fix | Commit |
 |---|---|---|---|---|---|---|
+| D-01 | 2026-11-25 | Test TC-AUTH-01 (system) | After login the user was sent to `/` and redirected a second time instead of going straight to the role's home page (FR-01 AC1). | Low | `auth.login` redirects directly to the dashboard (librarian) or "My account" (member). | `a4976f4` |
+| D-02 | 2026-11-25 | Manual run of `flask seed-demo` | Demo data crashed with "Copy code already exists": *Dune* and *Dune Messiah* both produced copy codes `DUN-001`. | Low | Explicit unique code prefix per demo title; regression test `test_seed_demo_creates_data_once`. | `acf3efa` |
+| D-03 | 2026-11-15 | Review while drawing the Copy state machine | Requirement gap: a new copy of a title with waiting reservations would become Available and bypass the queue (FR-04 vs FR-14). | High | Requirements v1.1: FR-04 AC3; test TC-CAT-11. | `c5550f8` |
+| D-04 | 2026-11-15 | Review while writing the test plan | Design defect: decision rules were inside services that need a database, so the decision tables could not be unit-tested. | Medium | Models v1.1: pure `EligibilityPolicy`. | `1721c51` |
+| D-05 | 2026-11-25 | Code review of the commit list | Generated folder `src/library_ms.egg-info` was committed by `git add -A`. | Low | Removed from the repository and added to `.gitignore`. | `3060217` |
+| D-06 | 2026-11-25 | Timing of the test run | The suite took 17 s because every test member got a full-cost scrypt password hash; risk for NFR-08 (≤ 30 s) as the suite grows. | Medium | Tests use a cheaper PBKDF2 setting through a fixture; production keeps scrypt (checked by TC-NFR-02). | `0a513c9` |
+| D-07 | 2026-11-25 | First run of the system tests | `tests/system/conftest.py` imported itself (`from conftest import …`), so no system test could start. | Low | Shared test data moved to `tests/helpers.py`. | `2cf9c06` |
+
+No defect is open.
 
