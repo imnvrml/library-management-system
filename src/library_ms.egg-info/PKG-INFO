@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: library-ms
+Version: 1.0.0
+Summary: Library Management System - Software Engineering individual project
+Author: Ramil İmanov
+Requires-Python: >=3.12
+Requires-Dist: flask>=3.1
