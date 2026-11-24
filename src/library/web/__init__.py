@@ -32,12 +32,16 @@ member_only = role_required(Role.MEMBER)
 any_user = role_required(Role.LIBRARIAN, Role.MEMBER)
 
 
+def safe_next(target: str | None) -> str | None:
+    """Only local paths are allowed as redirect targets (R-02: '//x' and a backslash after '/' lead to other sites)."""
+    if target and target.startswith("/") and not target.startswith("//") and "\\" not in target:
+        return target
+    return None
+
+
 def back(default_endpoint: str, **values):
     """Redirect to the page the form came from (same site only), else to a default page."""
-    target = request.form.get("next") or ""
-    if target.startswith("/") and not target.startswith("//"):
-        return redirect(target)
-    return redirect(url_for(default_endpoint, **values))
+    return redirect(safe_next(request.form.get("next")) or url_for(default_endpoint, **values))
 
 
 def parse_azn(text: str) -> int:
