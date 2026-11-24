@@ -98,7 +98,7 @@ Five techniques are used. Each test case in Section 4 names the technique it com
 
 | Input (rule) | Valid partitions | Invalid partitions | Boundary values tested | Test cases |
 |---|---|---|---|---|
-| Days late at return (FR-12, BR-07) | ≤ 0 → no fine; 1–50 → 20 qəpik/day; > 50 → capped 1000 | — | −1, 0, 1, 49, 50, 51 (+365 as a far value) | TC-FINE-01…07 |
+| Days late at return (FR-12, BR-07, BR-15) | ≤ 2 → no fine (grace, CR-01); 3–50 → 20 qəpik × every day late; > 50 → capped 1000 | — | −1, 0, 1, 2, 3, 49, 50, 51 (+365 as a far value) | TC-FINE-01…09 |
 | ISBN (BR-11) | 13 digits with valid check digit, with or without hyphens | wrong check digit; 12 or 14 digits; non-digit character; empty | 12, 13, 14 digits | TC-ISBN-01…07 |
 | Publication year (BR-12) | 1800 … current year | < 1800; > current year | 1799, 1800, 2026, 2027 | TC-CAT-03…06 |
 | Active loans before checkout (BR-02) | 0–4 | ≥ 5 | 4, 5 | TC-CHK-10, TC-CHK-03 |
@@ -193,17 +193,19 @@ A 1-switch path test (TC-STC-04) runs one copy through Available → On loan →
 Levels: **U** = unit, **I** = integration, **S** = system, **M** = manual. Unless stated, today = 2026-12-01.
 The columns *Actual* and *Result* are filled in when the tests are executed (Section 5).
 
-### 4.1 Fines (FR-12, BR-07)
+### 4.1 Fines (FR-12, BR-07, BR-15)
 
 | ID | Req | Tech | Lvl | Input | Expected | Actual | Result |
 |---|---|---|---|---|---|---|---|
 | TC-FINE-01 | FR-12 | BVA | U | due 12-15, returned 12-14 (−1 day) | 0 | as expected | Pass |
 | TC-FINE-02 | FR-12 AC1 | BVA | U | due 12-15, returned 12-15 (0) | 0 | as expected | Pass |
-| TC-FINE-03 | FR-12 AC2 | BVA | U | due 12-15, returned 12-16 (1) | 20 | as expected | Pass |
+| TC-FINE-03 | FR-12 AC2 | BVA | U | due 12-15, returned 12-16 (1) | 0 (grace period, CR-01; was 20) | as expected | Pass |
 | TC-FINE-04 | FR-12 | BVA | U | 49 days late | 980 | as expected | Pass |
 | TC-FINE-05 | FR-12 AC3 | BVA | U | 50 days late | 1000 | as expected | Pass |
 | TC-FINE-06 | FR-12 AC4 | BVA | U | 51 days late | 1000 | as expected | Pass |
 | TC-FINE-07 | FR-12 AC4 | EP | U | 365 days late | 1000 | as expected | Pass |
+| TC-FINE-08 | FR-12 AC5 | BVA | U | 2 days late (last grace day, CR-01) | 0 | as expected | Pass |
+| TC-FINE-09 | FR-12 AC6 | BVA | U | 3 days late (first day after grace, CR-01) | 60 | as expected | Pass |
 
 ### 4.2 ISBN validation (FR-03 AC2, BR-11)
 
@@ -292,7 +294,7 @@ The columns *Actual* and *Result* are filled in when the tests are executed (Sec
 | TC-RET-01 | FR-10 AC1 | ST | I | loan due 12-15, returned 12-15, no reservations | loan closed, fine 0, copy Available | as expected | Pass |
 | TC-RET-02 | FR-10 AC2, FR-14 AC1 | ST | I | Waiting: Ann (first), Ben; copy returned 12-01 | copy On hold for Ann; Ann Ready, deadline 12-04; Ben Waiting, position 1 | as expected | Pass |
 | TC-RET-03 | FR-10 AC3 | ST | I | return an Available copy | "Copy is not on loan" | as expected | Pass |
-| TC-RET-04 | FR-10, FR-12 | BVA | I | loan due 11-29, returned 12-01 | fine 40 stored; Ann's balance 40 | as expected | Pass |
+| TC-RET-04 | FR-10, FR-12 | BVA | I | loan due 11-27, returned 12-01 (4 days; CR-01 changed it from 2 days) | fine 80 stored; Ann's balance 80 | as expected | Pass |
 | TC-EXP-01 | FR-15 AC1 | ST, BVA | I | Ann's hold deadline 12-18; expiry run 12-19; no other reservation | Ann Expired; copy Available | as expected | Pass |
 | TC-EXP-02 | FR-15 AC2 | ST | I | as EXP-01 plus Ben Waiting | copy On hold for Ben, deadline 12-22 | as expected | Pass |
 | TC-EXP-03 | FR-15 AC3 | BVA | I | expiry run on 12-18 (deadline day) | nothing changes | as expected | Pass |
@@ -340,7 +342,7 @@ The columns *Actual* and *Result* are filled in when the tests are executed (Sec
 
 | ID | Req | Tech | Lvl | Input | Expected | Actual | Result |
 |---|---|---|---|---|---|---|---|
-| TC-ACCT-01 | FR-17 AC1 | UC | S | Ann: 2 open loans, fines 40 | page shows both loans with due dates and "0.40 AZN" | as expected | Pass |
+| TC-ACCT-01 | FR-17 AC1 | UC | S | Ann: 2 open loans, fines 80 (CR-01) | page shows both loans with due dates and "0.80 AZN" | as expected | Pass |
 | TC-ACCT-02 | FR-17, NFR-06 | EP | S | Ann is 2nd in a queue behind Ben | page shows "position 2"; Ben's name not shown | as expected | Pass |
 | TC-PAY-01 | FR-18 AC1 | EP | U | amount 60, balance 100 | None (allowed) | as expected | Pass |
 | TC-PAY-02 | FR-18 AC2 | BVA | U | amount 0 | "Amount must be positive" | as expected | Pass |
@@ -357,7 +359,7 @@ The columns *Actual* and *Result* are filled in when the tests are executed (Sec
 |---|---|---|---|---|---|---|---|
 | TC-UC05-01 | FR-09 | UC | S | Lib posts checkout form: Ann, C-001 | page shows "due 2026-12-15" | as expected | Pass |
 | TC-UC05-02 | FR-09 AC2 | UC | S | Ann has 5 loans; Lib posts checkout | page shows "Loan limit reached (5)"; no new loan | as expected | Pass |
-| TC-UC06-01 | FR-10, FR-12 | UC | S | Lib returns C-001, 2 days late | page shows fine "0.40 AZN" | as expected | Pass |
+| TC-UC06-01 | FR-10, FR-12 | UC | S | Lib returns C-001, 4 days late (CR-01) | page shows fine "0.80 AZN" | as expected | Pass |
 | TC-UC06-02 | FR-10 AC2 | UC | S | Ben waiting; Lib returns C-001 | page says copy is on hold for the next member | as expected | Pass |
 | TC-UC07-01 | FR-11 | UC | S | Ann clicks Renew on own loan | page shows new due date | as expected | Pass |
 | TC-UC07-02 | FR-02 AC3 | UC | S | Ann posts renew for Ben's loan id | HTTP 403 | as expected | Pass |
@@ -381,7 +383,7 @@ The columns *Actual* and *Result* are filled in when the tests are executed (Sec
 
 | Area | Unit | Integration | System | Manual / other | Total |
 |---|---|---|---|---|---|
-| Fines, ISBN | 14 | — | — | — | 14 |
+| Fines, ISBN | 16 | — | — | — | 16 |
 | Catalogue, search | — | 18 | 1 | — | 19 |
 | Accounts, access, members | — | 8 | 9 | — | 17 |
 | Checkout | 12 | 5 | — | — | 17 |
@@ -391,7 +393,7 @@ The columns *Actual* and *Result* are filled in when the tests are executed (Sec
 | Account, payments, overdue | 5 | 3 | 2 | — | 10 |
 | Use-case-based | — | — | 8 | — | 8 |
 | Non-functional | — | 4 | 1 | 3 | 8 |
-| **Total** | **43** | **60** | **21** | **3** | **127** |
+| **Total** | **45** | **60** | **21** | **3** | **129** |
 
 Techniques used: EP, BVA, DT, ST and UC (five; the course requires at least three).
 
@@ -404,9 +406,9 @@ Techniques used: EP, BVA, DT, ST and UC (five; the course requires at least thre
 | Date of the final run | 2026-11-25 (and on every push in GitHub Actions) |
 | Command | `python run_tests.py` (results copied into section 4 by `python scripts/trace.py`) |
 | Environment | Windows 11 + Python 3.12.10 locally; Ubuntu + Python 3.12 in CI |
-| Test cases in the plan | 127 |
-| Automated test cases | 124 (all pass) |
-| Executed test functions / parameter sets | 153 (all pass), of which 29 are technical tests without a test case ID (listed in `docs/traceability.md` §3) |
+| Test cases in the plan | 129 (127 + TC-FINE-08/09 added by CR-01) |
+| Automated test cases | 126 (all pass) |
+| Executed test functions / parameter sets | 155 (all pass), of which 29 are technical tests without a test case ID (listed in `docs/traceability.md` §3) |
 | Measured, not a test function | TC-NFR-07 (coverage), TC-NFR-08 (install and run time) — both pass |
 | Not run | TC-NFR-05 (manual usability walkthrough) — planned before submission |
 | Duration of the whole suite | 4–10 s locally, < 20 s in CI (NFR-08 limit: 30 s) |
@@ -461,6 +463,7 @@ the build. Severity levels: section 2.7.
 | D-05 | 2026-11-25 | Code review of the commit list | Generated folder `src/library_ms.egg-info` was committed by `git add -A`. | Low | Removed from the repository and added to `.gitignore`. | `3060217` |
 | D-06 | 2026-11-25 | Timing of the test run | The suite took 17 s because every test member got a full-cost scrypt password hash; risk for NFR-08 (≤ 30 s) as the suite grows. | Medium | Tests use a cheaper PBKDF2 setting through a fixture; production keeps scrypt (checked by TC-NFR-02). | `0a513c9` |
 | D-07 | 2026-11-25 | First run of the system tests | `tests/system/conftest.py` imported itself (`from conftest import …`), so no system test could start. | Low | Shared test data moved to `tests/helpers.py`. | `2cf9c06` |
+| D-08 | 2026-11-25 | Impact analysis of CR-01 (prediction vs. actual run) | The system test for recording a payment passed for the wrong reason: it only checked that the page shows "0.00 AZN", which is also true when the payment is refused. | Medium | The test now checks the success message "Payment recorded. New balance 0.00 AZN". | see CR-01 commits |
 
 No defect is open.
 

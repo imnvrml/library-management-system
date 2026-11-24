@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Author** | Ramil İmanov (group M666İ5) |
-| **Version** | 1.1 |
+| **Version** | 1.2 |
 | **Date** | 2026-11-15 |
 | **Based on** | Requirements Specification v1.1 |
 
@@ -13,6 +13,7 @@
 |---|---|---|
 | 1.0 | First version. | — |
 | 1.1 | Added `EligibilityPolicy` (pure functions `checkout_refusal`, `renew_refusal`, `reservation_refusal`, `payment_refusal`); SD-01, SD-03, SD-04 and SD-07 now call it. | Found while writing the test plan: the decision-table rules were hidden inside services that need a database, so they could only be tested at integration level. As pure functions they can be unit-tested exhaustively. |
+| 1.2 | CR-01: `Rules.grace_days = 2` in the design class diagram; fine formula in SD-02 updated. No other model is affected (impact analysis in `docs/change-request.md`). | Change request CR-01. |
 
 All diagrams are written in PlantUML. The source files are in `docs/models/*.puml` and the exported images
 in `docs/models/img/`. To regenerate the images: `java -jar plantuml.jar -tpng -o img docs/models/*.puml`.

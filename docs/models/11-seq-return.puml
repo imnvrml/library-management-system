@@ -26,7 +26,7 @@ alt no open loan for this copy
   bp --> Librarian : message
 else open loan found
   circ -> fine : fine_for(loan.due_date, today)
-  note right : UC-13 - FR-12\nmin(days_late x 20, 1000) qepik
+  note right : UC-13 - FR-12\n0 if days_late <= 2 (grace, BR-15)\nelse min(days_late x 20, 1000) qepik
   fine --> circ : fine_qepik
   circ -> loans : update(loan: return_date, fine_qepik)
   circ -> res : serve_queue(copy)
