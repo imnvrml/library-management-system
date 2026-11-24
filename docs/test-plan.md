@@ -408,7 +408,7 @@ Techniques used: EP, BVA, DT, ST and UC (five; the course requires at least thre
 | Environment | Windows 11 + Python 3.12.10 locally; Ubuntu + Python 3.12 in CI |
 | Test cases in the plan | 129 (127 + TC-FINE-08/09 added by CR-01) |
 | Automated test cases | 126 (all pass) |
-| Executed test functions / parameter sets | 155 (all pass), of which 29 are technical tests without a test case ID (listed in `docs/traceability.md` §3) |
+| Executed test functions / parameter sets | 158 (all pass), of which 32 are technical tests without a test case ID (listed in `docs/traceability.md` §3) |
 | Measured, not a test function | TC-NFR-07 (coverage), TC-NFR-08 (install and run time) — both pass |
 | Not run | TC-NFR-05 (manual usability walkthrough) — planned before submission |
 | Duration of the whole suite | 4–10 s locally, < 20 s in CI (NFR-08 limit: 30 s) |
@@ -464,6 +464,9 @@ the build. Severity levels: section 2.7.
 | D-06 | 2026-11-25 | Timing of the test run | The suite took 17 s because every test member got a full-cost scrypt password hash; risk for NFR-08 (≤ 30 s) as the suite grows. | Medium | Tests use a cheaper PBKDF2 setting through a fixture; production keeps scrypt (checked by TC-NFR-02). | `0a513c9` |
 | D-07 | 2026-11-25 | First run of the system tests | `tests/system/conftest.py` imported itself (`from conftest import …`), so no system test could start. | Low | Shared test data moved to `tests/helpers.py`. | `2cf9c06` |
 | D-08 | 2026-11-25 | Impact analysis of CR-01 (prediction vs. actual run) | The system test for recording a payment passed for the wrong reason: it only checked that the page shows "0.00 AZN", which is also true when the payment is refused. | Medium | The test now checks the success message "Payment recorded. New balance 0.00 AZN". | see CR-01 commits |
+| D-09 | 2026-11-25 | Code review (R-01) | Fixed, publicly known session key when `LIBRARY_SECRET_KEY` is not set; sessions could be forged. | High | Random key at start. | `05cb678` |
+| D-10 | 2026-11-25 | Code review (R-02) | Open redirect: `/\evil.example` passed the redirect check after login. | Medium | `safe_next()` rejects `//` and backslashes. | `6dbbf5e` |
+| D-11 | 2026-11-25 | Code review (R-03) | SQL in the web layer (dashboard), against the architecture. | Low | `CirculationService.desk_stats()`. | `32bde01` |
 
 No defect is open.
 
