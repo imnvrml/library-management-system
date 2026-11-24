@@ -13,12 +13,7 @@ bp = Blueprint("circulation", __name__)
 def dashboard():
     s = services()
     expired = s.queue.expire_holds()          # A-05: holds are also processed when the dashboard opens
-    stats = s.db.connection().execute(
-        "SELECT (SELECT COUNT(*) FROM loan WHERE return_date IS NULL) AS open_loans, "
-        "       (SELECT COUNT(*) FROM copy WHERE status = 'on_hold') AS holds, "
-        "       (SELECT COUNT(*) FROM reservation WHERE status = 'waiting') AS waiting"
-    ).fetchone()
-    return render_template("dashboard.html", stats=stats, overdue=len(s.circulation.overdue_loans()),
+    return render_template("dashboard.html", stats=s.circulation.desk_stats(), overdue=len(s.circulation.overdue_loans()),
                            expired=expired)
 
 

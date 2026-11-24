@@ -23,6 +23,13 @@ class OverdueLoan:
     fine_so_far_qepik: int
 
 
+@dataclass
+class DeskStats:
+    open_loans: int
+    holds: int
+    waiting: int
+
+
 class CirculationService:
     def __init__(self, db: Database, copies: CopyRepository, loans: LoanRepository, users: UserRepository,
                  titles: TitleRepository, members: MemberService, queue: ReservationService, fines: FinePolicy,
@@ -94,6 +101,11 @@ class CirculationService:
             loan.renewal_count += 1
             self.loans.update(loan)
             return loan
+
+    def desk_stats(self) -> DeskStats:
+        """Numbers for the librarian dashboard (R-03: computed here, not with SQL in the web layer)."""
+        return DeskStats(self.loans.count_open(), self.copies.count_with_status(CopyStatus.ON_HOLD),
+                         self.queue.reservations.count_waiting())
 
     def overdue_loans(self) -> list[OverdueLoan]:
         """FR-19: most days late first, with the fine accrued so far."""
