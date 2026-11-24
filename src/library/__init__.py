@@ -1,5 +1,6 @@
 """Library Management System - Flask application factory (models 5.1)."""
 import os
+import secrets
 
 import click
 from flask import Flask
@@ -17,7 +18,8 @@ def create_app(config: dict | None = None) -> Flask:
     app = Flask(__name__, template_folder="web/templates", static_folder="web/static")
     app.config.update(
         DATABASE=os.environ.get("LIBRARY_DB", os.path.join(app.instance_path, "library.db")),
-        SECRET_KEY=os.environ.get("LIBRARY_SECRET_KEY", "dev-only-change-me"),
+        # R-01: never a publicly known key; a random one means sessions end when the server restarts
+        SECRET_KEY=os.environ.get("LIBRARY_SECRET_KEY") or secrets.token_hex(32),
         SESSION_COOKIE_HTTPONLY=True,
         SESSION_COOKIE_SAMESITE="Lax",
         CLOCK=SystemClock(),
