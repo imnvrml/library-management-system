@@ -26,7 +26,7 @@ BR_TO_FR = {"BR-04": "FR-11", "BR-06": "FR-09", "BR-11": "FR-03"}
 
 # Test cases that are not automated functions: (actual result, result)
 NOT_AUTOMATED = {
-    "TC-NFR-05": ("Not run yet: manual walkthrough with 2 people is planned before submission", "Not run"),
+    "TC-NFR-05": ("2026-11-25: informal walkthrough by the developer on the running system - checkout and return completed without errors or help; times were not measured and no first-time users took part", "Partial"),
     "TC-NFR-07": ("Coverage of library/services 87–100 % per module, 95 % total (section 5.3)", "Pass"),
     "TC-NFR-08": ("CI installs from requirements.txt and runs the suite in < 20 s; install + start = 5 commands "
                   "(README)", "Pass"),
