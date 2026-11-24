@@ -61,21 +61,39 @@ requirement to its design element and code module.
 
 ## 4. Use of AI tools
 
-I used an AI assistant (Claude, by Anthropic, in the Claude Code tool) throughout the project. I describe its role
-honestly here:
+I used an AI coding assistant (Claude, by Anthropic, in the Claude Code tool) as a working partner during the
+whole project. I directed the work step by step; the assistant produced drafts and ran commands, and nothing went
+into the repository before I had approved that step.
 
-- **What the AI did:** it analysed the course handout, proposed the overall plan and the eight steps, and drafted
-  the requirements, the PlantUML diagrams, the test plan, most of the Python code and tests, the scripts and the
-  first versions of these documents. It also ran the tests, the Git commands and the GitHub pull requests on my
-  computer.
-- **What I did:** I chose the topic and the technology (Flask with HTML pages instead of the proposed command-line
-  version), approved or changed every step before the next one started, set the business-rule values (for
-  example I changed the publication-year limit from 1450 to 1800), decided which proposals to accept, and
-  reviewed the results.
-- **How I checked the AI's work:** nothing was accepted without running it. Every document is linked to the code
-  by test case IDs, every pull request had to pass the automated tests in CI, and the traceability matrix is
-  generated from real test results, not written by hand. Several mistakes made during the work (D-01, D-02, D-05
-  to D-08, R-01 to R-03) were found by these checks and are recorded in the defect log and the code review.
-- **What I learned from it:** the AI was fast at producing artefacts, but the engineering value came from the
-  checks around it — tests derived from requirements, the impact prediction for CR-01 and the review
-  checklist. I am responsible for every part of the submission and can explain each requirement, diagram and test.
+**My decisions and work**
+- I chose the topic (Library Management System) and the technology. The assistant proposed a command-line
+  application; I decided on a web application with Flask and HTML pages instead.
+- I split the project into the eight steps of the handout and approved or corrected each step before the next
+  one started: requirements, models, test plan, implementation, test report, change request, review, reflection.
+- I set and corrected the business rules. For example, I questioned the publication-year rule (1450 to today)
+  during the requirements review, because it was ambiguous whether it meant the year of the work or of the edition,
+  and changed it to "edition year, from 1800".
+- I reviewed the requirements, diagrams and test plan before they were merged, and asked for explanations where a
+  rule was unclear to me (for example why a title cannot be reserved while a copy is on the shelf).
+- I chose and approved the change request CR-01 and the code-review fixes, and I carry out the manual usability
+  test (TC-NFR-05) myself.
+
+**What the assistant did**
+- It drafted the text of the documents, the PlantUML diagrams, the Python code and the automated tests from the
+  decisions above, and ran the tests, Git commands and pull requests on my computer.
+- It proposed design options (for example the pure `EligibilityPolicy` for unit-testable decision rules), which
+  I accepted after seeing the reason.
+
+**How the AI output was checked**
+- Every document is linked to the code by requirement and test case IDs; the traceability matrix and the test
+  results are generated from real test runs (`scripts/trace.py`), not written by hand.
+- Every pull request had to pass the full automated test suite in CI before it was merged.
+- The checks found real mistakes in AI-written work — D-01, D-02, D-05 to D-08 and R-01 to R-03 — which are
+  recorded in the defect log and the code review. This showed me that an assistant's output must be treated like
+  any other untested code.
+
+**What I learned**
+The assistant made producing artefacts fast, but the engineering quality came from the process around it:
+requirements with testable acceptance criteria, tests derived with systematic techniques, a written impact
+analysis before a change, and a review checklist. I am responsible for the whole submission and can explain each
+requirement, diagram, design decision and test.
