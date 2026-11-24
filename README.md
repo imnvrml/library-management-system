@@ -83,4 +83,13 @@ Every test function carries the test case ID from `docs/test-plan.md` in its nam
 | F. Process evidence | GitHub issues and project board, pull requests, `docs/code-review.md` |
 | G. Reflection | `docs/reflection.md` |
 
-PDF versions of all documents are in `docs/pdf/`.
+PDF versions of all documents are in `docs/pdf/`. To regenerate the documents from the code:
+
+```bash
+python scripts/trace.py           # runs the tests, fills the test report results, rebuilds docs/traceability.md
+pip install markdown              # only for the next command
+python scripts/build_pdfs.py      # exports docs/*.md to docs/pdf/*.pdf (needs Google Chrome)
+```
+
+Diagrams are PlantUML sources in `docs/models/*.puml`; images are exported with
+`java -jar plantuml.jar -tpng -o img docs/models/*.puml`.
