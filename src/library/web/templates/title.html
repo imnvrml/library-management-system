@@ -1,0 +1,45 @@
+{% extends "base.html" %}{% block title %}{{ t.title }}{% endblock %}
+{% block content %}
+<h1>{{ t.title }}</h1>
+<p>{{ t.author }} · {{ t.publisher or "unknown publisher" }} · {{ t.pub_year }} · ISBN {{ t.isbn }}</p>
+<p><b>{{ available }}</b> available · {{ queue_length }} waiting in the reservation queue</p>
+{% if g.user.role == Role.LIBRARIAN %}
+  {% if available == 0 %}
+  <form method="post" action="{{ url_for('reservations.place', title_id=t.id) }}" class="card">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Reserve for member (e-mail) <input name="member_email" type="email" required></label>
+    <button>Reserve</button>
+  </form>
+  {% endif %}
+{% else %}
+<form method="post" action="{{ url_for('reservations.place', title_id=t.id) }}" class="inline">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <button>Reserve</button>
+</form>
+{% endif %}
+{% if g.user.role == Role.LIBRARIAN %}
+<h2>Copies</h2>
+<table>
+  <thead><tr><th>Code</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  {% for c in copies %}
+    <tr>
+      <td>{{ c.code }}</td>
+      <td><span class="status {{ c.status }}">{{ c.status.replace('_', ' ') }}</span>
+          {% if holders.get(c.id) %} for {{ holders[c.id] }}{% endif %}</td>
+      <td>{% if c.status == 'available' %}
+        <form method="post" action="{{ url_for('catalogue.withdraw_copy', copy_id=c.id) }}" class="inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="link">Withdraw</button>
+        </form>{% endif %}</td>
+    </tr>
+  {% else %}<tr><td colspan="3">No copies yet.</td></tr>{% endfor %}
+  </tbody>
+</table>
+<form method="post" action="{{ url_for('catalogue.add_copy', title_id=t.id) }}" class="card">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label>New copy code <input name="code" required placeholder="C-003"></label>
+  <button>Add copy</button>
+</form>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}{% block title %}Members{% endblock %}
+{% block content %}
+<h1>Members</h1>
+<table>
+  <thead><tr><th>Name</th><th>E-mail</th><th>Open loans</th><th>Balance</th><th>Status</th></tr></thead>
+  <tbody>
+  {% for m, open_loans, balance in rows %}
+    <tr>
+      <td><a href="{{ url_for('members.detail', member_id=m.id) }}">{{ m.full_name }}</a></td>
+      <td>{{ m.email }}</td><td>{{ open_loans }}</td><td>{{ balance|azn }}</td>
+      <td>{{ "active" if m.is_active else "deactivated" }}</td>
+    </tr>
+  {% else %}<tr><td colspan="5">No members yet.</td></tr>{% endfor %}
+  </tbody>
+</table>
+<form method="post" action="{{ url_for('members.register') }}" class="card">
+  <h2>Register a member</h2>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label>Full name <input name="full_name" required></label>
+  <label>E-mail <input name="email" type="email" required></label>
+  <label>Phone <input name="phone"></label>
+  <label>Initial password (at least 8 characters) <input name="password" type="password" minlength="8" required></label>
+  <button>Register</button>
+</form>
+{% endblock %}
