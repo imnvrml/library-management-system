@@ -7,12 +7,12 @@ from library.services import Services
 DEMO_PASSWORD = "library123"
 
 TITLES = [
-    ("9780441172719", "Dune", "Frank Herbert", "Ace", 1990, 3),
-    ("9780441172696", "Dune Messiah", "Frank Herbert", "Ace", 1987, 1),
-    ("9780132350884", "Clean Code", "Robert C. Martin", "Prentice Hall", 2008, 2),
-    ("9780201633610", "Design Patterns", "Gamma; Helm; Johnson; Vlissides", "Addison-Wesley", 1994, 1),
-    ("9780061120084", "To Kill a Mockingbird", "Harper Lee", "Harper Perennial", 2006, 2),
-    ("9780141439518", "Pride and Prejudice", "Jane Austen", "Penguin Classics", 2002, 1),
+    ("9780441172719", "Dune", "Frank Herbert", "Ace", 1990, 3, "DUN"),
+    ("9780441172696", "Dune Messiah", "Frank Herbert", "Ace", 1987, 1, "DUM"),
+    ("9780132350884", "Clean Code", "Robert C. Martin", "Prentice Hall", 2008, 2, "CLC"),
+    ("9780201633610", "Design Patterns", "Gamma; Helm; Johnson; Vlissides", "Addison-Wesley", 1994, 1, "DES"),
+    ("9780061120084", "To Kill a Mockingbird", "Harper Lee", "Harper Perennial", 2006, 2, "MOC"),
+    ("9780141439518", "Pride and Prejudice", "Jane Austen", "Penguin Classics", 2002, 1, "PRP"),
 ]
 
 
@@ -24,11 +24,11 @@ def seed(s: Services) -> str:
     ben = s.members.register("Ben Babayev", "ben@library.local", "+994502222222", DEMO_PASSWORD)
     s.members.register("Cem Cavadov", "cem@library.local", None, DEMO_PASSWORD)
     titles = {}
-    for isbn, title, author, publisher, year, copies in TITLES:
+    for isbn, title, author, publisher, year, copies, prefix in TITLES:
         t = s.catalogue.add_title(isbn, title, author, publisher, year)
         titles[title] = t
         for k in range(1, copies + 1):
-            s.catalogue.add_copy(t.id, f"{title[:3].upper()}-{k:03d}")
+            s.catalogue.add_copy(t.id, f"{prefix}-{k:03d}")
 
     # a loan that is already overdue: borrowed 20 days ago (the clock is moved back temporarily)
     today = s.clock.today()
