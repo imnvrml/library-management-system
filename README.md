@@ -41,7 +41,7 @@ All settings are optional environment variables:
 | Variable | Default | Meaning |
 |---|---|---|
 | `LIBRARY_DB` | `instance/library.db` | Path of the SQLite database file (created automatically) |
-| `LIBRARY_SECRET_KEY` | `dev-only-change-me` | Key that signs the session cookie — **set your own value for real use** |
+| `LIBRARY_SECRET_KEY` | random at every start | Key that signs the session cookie. Without it, users are logged out when the server restarts — **set a long random value for real use** |
 
 The business rules (loan period, limits, fines, pickup days) are in `src/library/rules.py`.
 

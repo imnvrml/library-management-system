@@ -131,6 +131,9 @@ class CopyRepository(_Repository):
     def count_available(self, title_id: int) -> int:
         return self._row("SELECT COUNT(*) FROM copy WHERE title_id = ? AND status = 'available'", (title_id,))[0]
 
+    def count_with_status(self, status: CopyStatus) -> int:
+        return self._row("SELECT COUNT(*) FROM copy WHERE status = ?", (str(status),))[0]
+
     def of_title(self, title_id: int) -> list[Copy]:
         return [self._map(r) for r in self._rows("SELECT * FROM copy WHERE title_id = ? ORDER BY code", (title_id,))]
 
@@ -180,6 +183,9 @@ class LoanRepository(_Repository):
             "SELECT COUNT(*) FROM loan l JOIN copy c ON c.id = l.copy_id "
             "WHERE l.member_id = ? AND c.title_id = ? AND l.return_date IS NULL", (member_id, title_id))[0] > 0
 
+    def count_open(self) -> int:
+        return self._row("SELECT COUNT(*) FROM loan WHERE return_date IS NULL")[0]
+
     def history_of(self, member_id: int) -> list[Loan]:
         return [self._map(r) for r in self._rows(
             "SELECT * FROM loan WHERE member_id = ? ORDER BY checkout_date DESC, id DESC", (member_id,))]
@@ -210,6 +216,9 @@ class ReservationRepository(_Repository):
         return [self._map(r) for r in self._rows(
             "SELECT * FROM reservation WHERE status = 'ready' AND pickup_deadline < ? ORDER BY pickup_deadline, id",
             (_iso(today),))]
+
+    def count_waiting(self) -> int:
+        return self._row("SELECT COUNT(*) FROM reservation WHERE status = 'waiting'")[0]
 
     def ready_for_copy(self, copy_id: int) -> Reservation | None:
         return self._map(self._row(

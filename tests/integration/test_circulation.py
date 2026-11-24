@@ -264,3 +264,11 @@ def test_TC_NFR_04_failure_during_return_changes_nothing(svc, dune, monkeypatch)
 def test_unrelated_title_is_not_affected(svc, dune):
     add_title(svc, CLEAN_CODE, "Clean Code", "Robert C. Martin", 2008)
     assert [s.title for s in svc.catalogue.search("")] == ["Clean Code", "Dune"]
+
+
+def test_R03_desk_statistics_come_from_the_service_layer(svc, dune):
+    """Code review R-03: the dashboard numbers are computed by repositories, not by SQL in the web layer."""
+    ann = add_member(svc, "Ann")
+    svc.circulation.checkout(ann.id, "C-001")
+    stats = svc.circulation.desk_stats()
+    assert (stats.open_loans, stats.holds, stats.waiting) == (1, 0, 0)

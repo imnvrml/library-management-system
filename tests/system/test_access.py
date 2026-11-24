@@ -116,3 +116,19 @@ def test_flash_messages_shown_after_redirect(client, data):
     login(client, "lib@example.com")
     page = post(client, "/circulation/checkout", member_email="nobody@example.com", copy_code="C-001")
     assert b"Member not found" in page.data
+
+
+def test_R01_no_fixed_secret_key_when_not_configured(tmp_path, monkeypatch):
+    """Code review R-01: without LIBRARY_SECRET_KEY the app must not use a publicly known key."""
+    from library import create_app
+    monkeypatch.delenv("LIBRARY_SECRET_KEY", raising=False)
+    first = create_app({"DATABASE": str(tmp_path / "a.db")}).config["SECRET_KEY"]
+    second = create_app({"DATABASE": str(tmp_path / "b.db")}).config["SECRET_KEY"]
+    assert first != "dev-only-change-me" and len(first) >= 32 and first != second
+
+
+def test_R02_login_ignores_next_url_pointing_to_another_site(client, data):
+    """Code review R-02: '/\evil.com' is read by browsers as '//evil.com' (open redirect)."""
+    response = client.post("/login?next=/\evil.example", data={
+        "email": "ann@example.com", "password": "secret123", "csrf_token": "test-csrf-token"})
+    assert response.headers["Location"].endswith("/account")

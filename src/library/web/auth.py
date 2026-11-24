@@ -3,7 +3,7 @@ from flask import Blueprint, flash, redirect, render_template, request, session,
 
 from library.domain import Role
 from library.errors import BusinessRuleError
-from library.web import services
+from library.web import safe_next, services
 
 bp = Blueprint("auth", __name__)
 
@@ -18,8 +18,8 @@ def login():
         csrf = session.get("csrf")
         session.clear()                     # new session on login
         session["user_id"], session["csrf"] = user.id, csrf
-        target = request.args.get("next") or ""
-        if target.startswith("/") and not target.startswith("//"):
+        target = safe_next(request.args.get("next"))
+        if target:
             return redirect(target)
         home = "circulation.dashboard" if user.role == Role.LIBRARIAN else "account.my_account"
         return redirect(url_for(home))   # FR-01 AC1: straight to the role's home page
