@@ -14,9 +14,9 @@ class FinePolicy:
         self.rules = rules
 
     def fine_for(self, due: date, returned: date) -> int:
-        """FR-12: fine in qəpik = days late x daily fine, capped per loan (BR-07)."""
+        """FR-12: no fine within the grace period (BR-15); after it every day late counts, capped (BR-07)."""
         days_late = (returned - due).days
-        if days_late <= 0:
+        if days_late <= self.rules.grace_days:
             return 0
         return min(days_late * self.rules.fine_per_day_qepik, self.rules.max_fine_qepik)
 

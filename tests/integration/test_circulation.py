@@ -115,11 +115,11 @@ def test_TC_RET_03_return_available_copy(svc, dune):
 
 def test_TC_RET_04_late_return_charges_fine(svc, clock, dune):
     ann = add_member(svc, "Ann")
-    on(clock, date(2026, 11, 15))
-    svc.circulation.checkout(ann.id, "C-001")  # due 2026-11-29
+    on(clock, date(2026, 11, 13))
+    svc.circulation.checkout(ann.id, "C-001")  # due 2026-11-27
     on(clock, date(2026, 12, 1))
-    assert svc.circulation.return_copy("C-001").fine_qepik == 40
-    assert svc.members.balance(ann.id) == 40
+    assert svc.circulation.return_copy("C-001").fine_qepik == 80   # 4 days late, beyond the grace period
+    assert svc.members.balance(ann.id) == 80
 
 
 # ---------- renewal (FR-11) ----------

@@ -19,7 +19,7 @@ Legend: SD = sequence diagram, SM = state machine, DT = decision table (models /
 | FR-09 | Check out a copy | M | UC-05 | SD-01, Copy SM, DT-1; CirculationService.checkout, EligibilityPolicy.checkout_refusal | `services/circulation.py, services/policies.py` | TC-CHK-01, TC-CHK-02, TC-CHK-03, TC-CHK-04, TC-CHK-05, TC-CHK-06, TC-CHK-07, TC-CHK-08, TC-CHK-09, TC-CHK-10, TC-CHK-11, TC-CHK-12, TC-CHK-13, TC-CHK-14, TC-CHK-15, TC-CHK-16, TC-CHK-17, TC-STC-04, TC-UC05-01, TC-UC05-02 | 20 | traced, passing |
 | FR-10 | Return a copy | M | UC-06 | SD-02, Copy SM; CirculationService.return_copy | `services/circulation.py` | TC-RET-01, TC-RET-02, TC-RET-03, TC-RET-04, TC-STC-02, TC-STC-03, TC-STC-04, TC-UC06-01, TC-UC06-02 | 9 | traced, passing |
 | FR-11 | Renew a loan | M | UC-07 | SD-03, DT-2; CirculationService.renew, EligibilityPolicy.renew_refusal | `services/circulation.py, services/policies.py` | TC-REN-01, TC-REN-02, TC-REN-03, TC-REN-04, TC-REN-05, TC-REN-06, TC-REN-07, TC-REN-09, TC-UC07-01 | 9 | traced, passing |
-| FR-12 | Calculate overdue fines | M | UC-13 | SD-02; FinePolicy.fine_for | `services/policies.py` | TC-FINE-01, TC-FINE-02, TC-FINE-03, TC-FINE-04, TC-FINE-05, TC-FINE-06, TC-FINE-07, TC-RET-04, TC-UC06-01 | 9 | traced, passing |
+| FR-12 | Calculate overdue fines | M | UC-13 | SD-02; FinePolicy.fine_for | `services/policies.py` | TC-FINE-01, TC-FINE-02, TC-FINE-03, TC-FINE-04, TC-FINE-05, TC-FINE-06, TC-FINE-07, TC-FINE-08, TC-FINE-09, TC-RET-04, TC-UC06-01 | 11 | traced, passing |
 | FR-13 | Place a reservation | M | UC-08 | SD-04, Reservation SM, DT-3; ReservationService.place, EligibilityPolicy.reservation_refusal | `services/reservations.py, services/policies.py` | TC-RES-01, TC-RES-02, TC-RES-03, TC-RES-04, TC-RES-05, TC-RES-06, TC-RES-07, TC-RES-08, TC-UC08-01, TC-UC08-02 | 10 | traced, passing |
 | FR-14 | Serve the reservation queue | M | UC-15 | SD-02, SD-06, Reservation SM; ReservationService.serve_queue | `services/reservations.py` | TC-CHK-14, TC-RES-07, TC-RET-02, TC-STC-04 | 4 | traced, passing |
 | FR-15 | Expire uncollected holds | M | UC-14 | SD-01..SD-04, Reservation SM; ReservationService.expire_holds | `services/reservations.py` | TC-EXP-01, TC-EXP-02, TC-EXP-03, TC-EXP-04, TC-STC-04 | 5 | traced, passing |
@@ -42,8 +42,8 @@ Legend: SD = sequence diagram, SM = state machine, DT = decision table (models /
 
 - Must requirements: 19; fully traced (use case, design, code and at least one passing test): 19.
 - Requirements without a test case: FR-20, FR-21.
-- Test cases in the plan: 127; automated: 124; manual or measured: TC-NFR-05, TC-NFR-07, TC-NFR-08.
-- Executed test functions/parameter sets: 153; passed: 153.
+- Test cases in the plan: 129; automated: 126; manual or measured: TC-NFR-05, TC-NFR-07, TC-NFR-08.
+- Executed test functions/parameter sets: 155; passed: 155.
 
 ## 3. Automated tests without a test case ID
 

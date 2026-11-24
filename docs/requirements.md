@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Author** | Ramil İmanov (group M666İ5) |
-| **Version** | 1.1 |
+| **Version** | 1.2 |
 | **Date** | 2026-11-15 |
 | **Status** | Baseline for design |
 
@@ -13,6 +13,7 @@
 |---|---|---|---|
 | 1.0 | 2026-11-15 | First baseline. | — |
 | 1.1 | 2026-11-15 | FR-04: a new copy of a title with Waiting reservations goes On hold for the first reservation (AC3 added). | Gap found while drawing the Copy state machine: a new copy would have become Available while members were waiting, which breaks the queue rule of FR-14. |
+| 1.2 | 2026-11-25 | CR-01: new BR-15 grace period (2 days); FR-12 text and AC2 changed, AC5/AC6 added. | Change request from the library manager, see `docs/change-request.md`. |
 
 ## 1. Introduction
 
@@ -175,11 +176,14 @@ has a waiting reservation for the same title (BR-04).
 - AC3: Given an overdue loan, when renewing, then the system refuses with "Overdue loans cannot be renewed".
 - AC4: Given a waiting reservation by another member for the same title, when renewing, then the system refuses with "Title is reserved by another member".
 
-**FR-12 — Calculate overdue fines (M).** When a copy is returned after its due date, the system shall charge
-a fine of BR-07 per calendar day late, capped per loan at the BR-07 maximum. Days late = return date − due
-date. Fines are calculated exactly in qəpik (no floating-point rounding).
+**FR-12 — Calculate overdue fines (M).** When a copy is returned more than the grace period (BR-15) after its
+due date, the system shall charge a fine of BR-07 for **every** calendar day late, capped per loan at the BR-07
+maximum. A return within the grace period is free of charge. Days late = return date − due date. Fines are
+calculated exactly in qəpik (no floating-point rounding). *(Changed by CR-01 in v1.2.)*
 - AC1: Returned on the due date → fine 0.00 AZN.
-- AC2: Returned 1 day late → fine 0.20 AZN.
+- AC2: Returned 1 day late → fine 0.00 AZN (grace period).
+- AC5: Returned 2 days late → fine 0.00 AZN (last day of the grace period).
+- AC6: Returned 3 days late → fine 0.60 AZN (every day counts).
 - AC3: Returned 50 days late → fine 10.00 AZN (exactly the cap).
 - AC4: Returned 51 days or more late → fine 10.00 AZN (capped).
 
@@ -281,6 +285,7 @@ configuration module in the code so that the library manager can change them wit
 | BR-12 | Allowed publication year **of this edition** (not of the original work) | 1800 to the current year |
 | BR-13 | Minimum password length | 8 characters |
 | BR-14 | Money is stored and calculated as whole qəpik (integers) and shown as AZN with 2 decimals | — |
+| BR-15 | Grace period: no fine if the copy is returned at most this many days after the due date; after it, every day late is charged (BR-07). The loan is still overdue from the first day (BR-06). | 2 calendar days |
 
 ## 8. Assumptions
 

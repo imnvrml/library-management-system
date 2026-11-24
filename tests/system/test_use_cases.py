@@ -22,12 +22,12 @@ def test_TC_UC05_02_checkout_loan_limit(client, svc, data):
 
 def test_TC_UC06_01_late_return_shows_fine(client, svc, app, data):
     clock = app.config["CLOCK"]
-    clock.day = date(2026, 11, 15)
-    svc.circulation.checkout(data["ann"].id, "C-001")  # due 11-29
+    clock.day = date(2026, 11, 13)
+    svc.circulation.checkout(data["ann"].id, "C-001")  # due 11-27, returned 4 days late
     clock.day = date(2026, 12, 1)
     login(client, "lib@example.com")
     page = post(client, "/circulation/return", copy_code="C-001")
-    assert b"Fine 0.40 AZN" in page.data
+    assert b"Fine 0.80 AZN" in page.data
 
 
 def test_TC_UC06_02_returned_copy_goes_on_hold(client, svc, data):
@@ -79,15 +79,15 @@ def test_search_page_shows_available_of_total(client, svc, data):
 
 def test_TC_ACCT_01_account_page_shows_loans_and_balance(client, svc, app, data):
     clock = app.config["CLOCK"]
-    clock.day = date(2026, 11, 15)
+    clock.day = date(2026, 11, 13)
     svc.circulation.checkout(data["ann"].id, "C-001")
     clock.day = date(2026, 12, 1)
-    svc.circulation.return_copy("C-001")               # fine 40
+    svc.circulation.return_copy("C-001")               # 4 days late: fine 80
     svc.circulation.checkout(data["ann"].id, "C-001")
     svc.circulation.checkout(data["ann"].id, "C-002")
     login(client, "ann@example.com")
     page = client.get("/account").data
-    assert page.count(b"2026-12-15") >= 2 and b"0.40 AZN" in page
+    assert page.count(b"2026-12-15") >= 2 and b"0.80 AZN" in page
 
 
 def test_TC_ACCT_02_queue_position_without_other_names(client, svc, data):
@@ -123,12 +123,12 @@ def test_librarian_registers_member_and_records_payment(client, svc, app, data):
     page = post(client, "/members", full_name="Dan Demo", email="dan@example.com", phone="", password="secret123")
     assert b"Dan Demo" in page.data
     clock = app.config["CLOCK"]
-    clock.day = date(2026, 11, 15)
+    clock.day = date(2026, 11, 13)
     svc.circulation.checkout(data["ann"].id, "C-001")
     clock.day = date(2026, 12, 1)
-    svc.circulation.return_copy("C-001")
-    page = post(client, f"/members/{data['ann'].id}/payments", amount="0.40")
-    assert b"0.00 AZN" in page.data
+    svc.circulation.return_copy("C-001")               # fine 0.80 AZN
+    page = post(client, f"/members/{data['ann'].id}/payments", amount="0.80")
+    assert b"Payment recorded. New balance 0.00 AZN" in page.data   # D-08: check the success message
 
 
 def test_overdue_page(client, svc, app, data):
