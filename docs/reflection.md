@@ -52,8 +52,8 @@ requirement to its design element and code module.
    it earlier would have avoided models v1.1.
 2. **Add display and data rules to the requirements** (counts, case sensitivity, message wording) instead of
    deciding them in code.
-3. **Run the manual usability walkthrough (NFR-05) as soon as the first page works**, not at the end; it is still
-   open at the time of writing.
+3. **Run the manual usability walkthrough (NFR-05) as soon as the first page works**, not at the end. I left it
+   to the last day and could only do an informal check myself, so NFR-05 is only partly verified.
 4. **Generate the traceability matrix from the first test**, as `scripts/trace.py` does now, instead of planning to
    write it by hand at the end.
 5. **Keep the review checklist next to me while coding.** All three review findings (R-01…R-03) were known
@@ -75,8 +75,8 @@ into the repository before I had approved that step.
   and changed it to "edition year, from 1800".
 - I reviewed the requirements, diagrams and test plan before they were merged, and asked for explanations where a
   rule was unclear to me (for example why a title cannot be reserved while a copy is on the shelf).
-- I chose and approved the change request CR-01 and the code-review fixes, and I carry out the manual usability
-  test (TC-NFR-05) myself.
+- I chose and approved the change request CR-01 and the code-review fixes, and I checked the running system myself
+  (informal usability walkthrough, TC-NFR-05).
 
 **What the assistant did**
 - It drafted the text of the documents, the PlantUML diagrams, the Python code and the automated tests from the

@@ -374,7 +374,7 @@ The columns *Actual* and *Result* are filled in when the tests are executed (Sec
 | TC-NFR-02 | NFR-02 | EP | I | register member with password "secret123" | stored hash ≠ password; starts with `scrypt:` or `pbkdf2:`; no column contains "secret123" | as expected | Pass |
 | TC-NFR-03 | NFR-03 | — | S | list of all routes vs routes covered by TC-ACC-01/02 | every librarian route is covered | as expected | Pass |
 | TC-NFR-04 | NFR-04 | — | I | inject an error in `serve_queue` during a return | loan still open, copy still On loan, no reservation changed | as expected | Pass |
-| TC-NFR-05 | NFR-05 | — | M | 2 people who never used the system: checkout + return | each finishes in ≤ 2 min with on-screen labels only | Not run yet: manual walkthrough with 2 people is planned before submission | Not run |
+| TC-NFR-05 | NFR-05 | — | M | 2 people who never used the system: checkout + return | each finishes in ≤ 2 min with on-screen labels only | 2026-11-25: informal walkthrough by the developer on the running system - checkout and return completed without errors or help; times were not measured and no first-time users took part | Partial |
 | TC-NFR-06 | NFR-06 | — | I | inspect `user` table columns | only id, email, password_hash, full_name, phone, role, is_active, created_at | as expected | Pass |
 | TC-NFR-07 | NFR-07 | — | — | coverage report of `library/services` | ≥ 90 % statements | Coverage of library/services 87–100 % per module, 95 % total (section 5.3) | Pass |
 | TC-NFR-08 | NFR-08 | — | — | fresh clone, new venv, `run_tests` | install + start in ≤ 5 commands; suite ≤ 30 s | CI installs from requirements.txt and runs the suite in < 20 s; install + start = 5 commands (README) | Pass |
@@ -410,18 +410,19 @@ Techniques used: EP, BVA, DT, ST and UC (five; the course requires at least thre
 | Automated test cases | 126 (all pass) |
 | Executed test functions / parameter sets | 158 (all pass), of which 32 are technical tests without a test case ID (listed in `docs/traceability.md` §3) |
 | Measured, not a test function | TC-NFR-07 (coverage), TC-NFR-08 (install and run time) — both pass |
-| Not run | TC-NFR-05 (manual usability walkthrough) — planned before submission |
+| Manual | TC-NFR-05 (usability walkthrough) — done informally by the developer, see 5.2 |
 | Duration of the whole suite | 4–10 s locally, < 20 s in CI (NFR-08 limit: 30 s) |
 | NFR-01 search time | p95 = 7.1 ms for 1,000 titles / 3,000 copies on the development laptop (limit 1 s) |
 
 **Exit criteria (section 2.6):** all Must test cases executed and passing — met; ≥ 95 % of automated test
 cases pass — met (100 %); no open Critical/High defect — met; service coverage ≥ 90 % — met (see 5.3);
-usability walkthrough — **not yet met** (TC-NFR-05).
+usability walkthrough — **partly met**: done informally, without first-time users and without timing (TC-NFR-05, 5.2).
 
 ### 5.2 Changes to test cases during execution
 - **TC-ACC-05:** the expected result "HTTP 200 for each" only holds for pages (GET). Librarian *actions*
   (POST) answer with a redirect (302) after showing a message. The test now expects 200 for GET and 200/302 for
   POST; the important property — never 403 for a librarian — is unchanged.
+- **TC-NFR-05:** the planned walkthrough with two first-time users and a stopwatch was not organised before the deadline. The developer checked checkout and return on the running system (`flask seed-demo`, librarian account); both worked without errors and without needing help. Because the tester knew the system and no time was measured, NFR-05 is recorded as **partly verified**, not as passed.
 - **TC-NFR-01:** implemented with a fixed random seed so that the 100 searches are the same on every run.
 
 ### 5.3 Code coverage
