@@ -1,0 +1,15 @@
+"""Application factory smoke tests (NFR-08: the app starts with only the packages in requirements.txt)."""
+from library import create_app
+
+
+def test_create_app_with_a_new_database_file(tmp_path):
+    app = create_app({"DATABASE": str(tmp_path / "test.db"), "TESTING": True})
+    con = app.extensions["library_db"].connection()
+    assert con.execute("SELECT COUNT(*) FROM user").fetchone()[0] == 0
+
+
+def test_init_db_command_is_repeatable(tmp_path):
+    app = create_app({"DATABASE": str(tmp_path / "test.db"), "TESTING": True})
+    runner = app.test_cli_runner()
+    assert "Database ready" in runner.invoke(args=["init-db"]).output
+    assert "Database ready" in runner.invoke(args=["init-db"]).output
