@@ -43,7 +43,7 @@ Legend: SD = sequence diagram, SM = state machine, DT = decision table (models /
 - Must requirements: 19; fully traced (use case, design, code and at least one passing test): 19.
 - Requirements without a test case: FR-20, FR-21.
 - Test cases in the plan: 129; automated: 126; manual or measured: TC-NFR-05, TC-NFR-07, TC-NFR-08.
-- Executed test functions/parameter sets: 155; passed: 155.
+- Executed test functions/parameter sets: 158; passed: 158.
 
 ## 3. Automated tests without a test case ID
 
@@ -51,6 +51,7 @@ These tests check technical behaviour that supports the requirements (schema, tr
 
 - `tests.integration.test_catalogue::test_add_title_rejects_invalid_isbn`
 - `tests.integration.test_catalogue::test_search_with_no_match_returns_empty_list`
+- `tests.integration.test_circulation::test_R03_desk_statistics_come_from_the_service_layer`
 - `tests.integration.test_circulation::test_checkout_refusal_saves_nothing`
 - `tests.integration.test_circulation::test_librarian_can_renew_any_loan`
 - `tests.integration.test_circulation::test_unrelated_title_is_not_affected`
@@ -63,6 +64,8 @@ These tests check technical behaviour that supports the requirements (schema, tr
 - `tests.integration.test_schema::test_one_open_loan_per_copy_is_enforced`
 - `tests.integration.test_schema::test_schema_has_the_six_tables_of_the_logical_erd`
 - `tests.integration.test_schema::test_transaction_rolls_back_on_error`
+- `tests.system.test_access::test_R01_no_fixed_secret_key_when_not_configured`
+- `tests.system.test_access::test_R02_login_ignores_next_url_pointing_to_another_site`
 - `tests.system.test_access::test_flash_messages_shown_after_redirect`
 - `tests.system.test_access::test_member_session_for_deactivated_account_is_closed`
 - `tests.system.test_access::test_post_without_csrf_token_is_rejected`
