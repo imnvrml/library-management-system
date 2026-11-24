@@ -1,0 +1,27 @@
+{% extends "base.html" %}{% block title %}Desk{% endblock %}
+{% block content %}
+<h1>Circulation desk</h1>
+<div class="grid">
+  <form method="post" action="{{ url_for('circulation.checkout') }}" class="card">
+    <h2>Check out</h2>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Member e-mail <input name="member_email" type="email" required></label>
+    <label>Copy code <input name="copy_code" required placeholder="C-001"></label>
+    <button>Check out</button>
+  </form>
+  <form method="post" action="{{ url_for('circulation.return_copy') }}" class="card">
+    <h2>Return</h2>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Copy code <input name="copy_code" required placeholder="C-001"></label>
+    <button>Return</button>
+  </form>
+</div>
+<h2>Today</h2>
+<ul class="stats">
+  <li><b>{{ stats.open_loans }}</b> copies on loan</li>
+  <li><a href="{{ url_for('circulation.overdue') }}"><b>{{ overdue }}</b> overdue loans</a></li>
+  <li><b>{{ stats.holds }}</b> copies on the hold shelf</li>
+  <li><b>{{ stats.waiting }}</b> members waiting in reservation queues</li>
+  {% if expired %}<li><b>{{ expired }}</b> uncollected holds expired just now</li>{% endif %}
+</ul>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% block title %}{{ m.full_name }}{% endblock %}
+{% block content %}
+<h1>{{ m.full_name }}</h1>
+<p>{{ m.email }} · {{ m.phone or "no phone" }} · {{ "active" if m.is_active else "deactivated" }}</p>
+<p>Balance: <b>{{ balance|azn }}</b></p>
+<h2>Loans</h2>
+{% include "_loans.html" %}
+<h2>Reservations</h2>
+{% include "_reservations.html" %}
+<div class="grid">
+  <form method="post" action="{{ url_for('members.record_payment', member_id=m.id) }}" class="card">
+    <h2>Record payment</h2>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Amount (AZN) <input name="amount" inputmode="decimal" placeholder="0.40" required></label>
+    <button>Record payment</button>
+  </form>
+  {% if m.is_active %}
+  <form method="post" action="{{ url_for('members.deactivate', member_id=m.id) }}" class="card">
+    <h2>Deactivate</h2>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <p>Only possible without open loans and with balance 0.00 AZN.</p>
+    <button class="danger">Deactivate member</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

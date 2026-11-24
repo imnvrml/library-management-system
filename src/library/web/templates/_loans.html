@@ -1,0 +1,18 @@
+<table>
+  <thead><tr><th>Title</th><th>Copy</th><th>Borrowed</th><th>Due</th><th>Returned</th><th>Fine</th><th></th></tr></thead>
+  <tbody>
+  {% for loan, copy, title in loans %}
+    <tr>
+      <td>{{ title.title }}</td><td>{{ copy.code }}</td><td>{{ loan.checkout_date }}</td>
+      <td>{{ loan.due_date }}{% if loan.is_overdue(today) %} <span class="status overdue">overdue</span>{% endif %}</td>
+      <td>{{ loan.return_date or "—" }}</td><td>{{ loan.fine_qepik|azn }}</td>
+      <td>{% if not loan.return_date %}
+        <form method="post" action="{{ url_for('circulation.renew', loan_id=loan.id) }}" class="inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button class="link">Renew ({{ loan.renewal_count }}/2)</button>
+        </form>{% endif %}</td>
+    </tr>
+  {% else %}<tr><td colspan="7">No loans.</td></tr>{% endfor %}
+  </tbody>
+</table>

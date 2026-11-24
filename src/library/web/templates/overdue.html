@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block title %}Overdue loans{% endblock %}
+{% block content %}
+<h1>Overdue loans</h1>
+<table>
+  <thead><tr><th>Member</th><th>Title</th><th>Copy</th><th>Due</th><th>Days late</th><th>Fine so far</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr><td>{{ r.member_name }}</td><td>{{ r.title }}</td><td>{{ r.copy_code }}</td><td>{{ r.loan.due_date }}</td>
+        <td>{{ r.days_late }}</td><td>{{ r.fine_so_far_qepik|azn }}</td></tr>
+  {% else %}<tr><td colspan="6">No overdue loans.</td></tr>{% endfor %}
+  </tbody>
+</table>
+{% endblock %}

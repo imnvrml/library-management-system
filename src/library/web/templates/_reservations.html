@@ -1,0 +1,16 @@
+<table>
+  <thead><tr><th>Title</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  {% for v in reservations %}
+    <tr>
+      <td>{{ v.title }}</td>
+      <td>{% if v.position == 0 %}ready for pickup until {{ v.reservation.pickup_deadline }}
+          {% else %}waiting, position {{ v.position }}{% endif %}</td>
+      <td><form method="post" action="{{ url_for('reservations.cancel', reservation_id=v.reservation.id) }}" class="inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="link">Cancel</button>
+      </form></td>
+    </tr>
+  {% else %}<tr><td colspan="3">No active reservations.</td></tr>{% endfor %}
+  </tbody>
+</table>

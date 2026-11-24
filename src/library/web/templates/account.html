@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}My account{% endblock %}
+{% block content %}
+<h1>My account</h1>
+<p>Balance: <b>{{ balance|azn }}</b> (pay at the desk)</p>
+<h2>My loans</h2>
+{% include "_loans.html" %}
+<h2>My reservations</h2>
+{% include "_reservations.html" %}
+{% endblock %}

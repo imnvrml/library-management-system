@@ -1,0 +1,37 @@
+{% extends "base.html" %}{% block title %}Catalogue{% endblock %}
+{% block content %}
+<h1>Catalogue</h1>
+<form method="get" class="search">
+  <label class="sr-only" for="q">Search</label>
+  <input id="q" name="q" value="{{ q }}" placeholder="Title, author or ISBN">
+  <button>Search</button>
+</form>
+{% if results %}
+<table>
+  <thead><tr><th>Title</th><th>Author</th><th>Year</th><th>ISBN</th><th>Copies</th></tr></thead>
+  <tbody>
+  {% for r in results %}
+    <tr>
+      <td><a href="{{ url_for('catalogue.title', title_id=r.id) }}">{{ r.title }}</a></td>
+      <td>{{ r.author }}</td><td>{{ r.pub_year }}</td><td>{{ r.isbn }}</td>
+      <td>{{ r.available }} of {{ r.total }} available</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">No titles found.</p>
+{% endif %}
+{% if g.user.role == Role.LIBRARIAN %}
+<form method="post" action="{{ url_for('catalogue.add_title') }}" class="card">
+  <h2>Add a title</h2>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label>ISBN-13 <input name="isbn" required placeholder="978-0-441-17271-9"></label>
+  <label>Title <input name="title" required></label>
+  <label>Author(s) <input name="author" required></label>
+  <label>Publisher <input name="publisher"></label>
+  <label>Year of this edition <input name="year" type="number" min="1800" max="{{ today.year }}" required></label>
+  <button>Add title</button>
+</form>
+{% endif %}
+{% endblock %}
