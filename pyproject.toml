@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "library-ms"
+version = "1.0.0"
+description = "Library Management System - Software Engineering individual project"
+authors = [{ name = "Ramil İmanov" }]
+requires-python = ">=3.12"
+dependencies = ["flask>=3.1"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+library = ["schema.sql", "web/templates/*.html", "web/templates/**/*.html", "web/static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
+
+[tool.coverage.run]
+source = ["library"]
+branch = true
