@@ -16,6 +16,12 @@ DUNE_MESSIAH = "9780441172696"
 CLEAN_CODE = "9780132350884"
 
 
+@pytest.fixture(autouse=True)
+def fast_password_hashing(monkeypatch):
+    """Same salted PBKDF2 algorithm family, fewer iterations: hashing is not what these tests check."""
+    monkeypatch.setattr("library.services.auth.HASH_METHOD", "pbkdf2:sha256:1000")
+
+
 @pytest.fixture
 def rules():
     return Rules()

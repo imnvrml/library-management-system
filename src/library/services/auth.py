@@ -5,6 +5,9 @@ from library.domain import User
 from library.errors import BusinessRuleError
 from library.repositories import UserRepository
 
+# Werkzeug's default is a salted scrypt hash. Tests lower the cost (tests/conftest.py) to keep the suite fast.
+HASH_METHOD = "scrypt"
+
 
 class AuthService:
     def __init__(self, users: UserRepository):
@@ -21,4 +24,4 @@ class AuthService:
 
     @staticmethod
     def hash_password(plain: str) -> str:
-        return generate_password_hash(plain)  # salted scrypt hash (Werkzeug default)
+        return generate_password_hash(plain, method=HASH_METHOD)
