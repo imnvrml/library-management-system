@@ -9,8 +9,10 @@ from library.repositories import (
 from library.rules import Rules
 from library.services.auth import AuthService
 from library.services.catalogue import CatalogueService
+from library.services.circulation import CirculationService
 from library.services.members import MemberService
 from library.services.policies import EligibilityPolicy, FinePolicy
+from library.services.reservations import ReservationService
 
 
 @dataclass
@@ -29,17 +31,23 @@ class Services:
     auth: AuthService
     catalogue: CatalogueService
     members: MemberService
+    queue: ReservationService
+    circulation: CirculationService
 
 
 def build_services(db: Database, clock: Clock, rules: Rules) -> Services:
     users, titles, copies = UserRepository(db), TitleRepository(db), CopyRepository(db)
     loans, reservations, payments = LoanRepository(db), ReservationRepository(db), PaymentRepository(db)
     fines, policy = FinePolicy(rules), EligibilityPolicy(rules)
+    members = MemberService(db, users, loans, payments, policy, clock, rules)
+    queue = ReservationService(db, reservations, copies, loans, titles, policy, clock, rules)
     return Services(
         db=db, clock=clock, rules=rules,
         users=users, titles=titles, copies=copies, loans=loans, reservations=reservations, payments=payments,
         fines=fines, policy=policy,
         auth=AuthService(users),
-        catalogue=CatalogueService(db, titles, copies, clock, rules),
-        members=MemberService(db, users, loans, payments, policy, clock, rules),
+        catalogue=CatalogueService(db, titles, copies, clock, rules, queue=queue),
+        members=members,
+        queue=queue,
+        circulation=CirculationService(db, copies, loans, users, titles, members, queue, fines, policy, clock, rules),
     )
