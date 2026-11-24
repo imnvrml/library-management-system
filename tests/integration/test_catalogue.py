@@ -1,7 +1,7 @@
 """Catalogue and search integration tests: TC-CAT-01..10, 12, 13 and TC-SRC-01..03, 05, 06 (FR-03 to FR-06)."""
 import pytest
 
-from conftest import CLEAN_CODE, DUNE, DUNE_MESSIAH, add_copies, add_title
+from helpers import CLEAN_CODE, DUNE, DUNE_MESSIAH, add_copies, add_title
 from library.domain import CopyStatus
 from library.errors import BusinessRuleError
 

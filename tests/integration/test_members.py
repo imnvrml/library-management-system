@@ -3,7 +3,7 @@ from datetime import date
 
 import pytest
 
-from conftest import PASSWORD, add_member
+from helpers import PASSWORD, add_member
 from library.domain import Loan, Role
 from library.errors import BusinessRuleError
 

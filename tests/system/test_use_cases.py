@@ -1,7 +1,7 @@
 """Use-case-based system tests and pages: TC-UC05..08, TC-SRC-04, TC-ACCT-01..02 (test plan 3.4, 4.9, 4.10)."""
 from datetime import date
 
-from system.conftest import CSRF, login, post
+from helpers import CSRF, login, post
 
 
 def test_TC_UC05_01_checkout_main_flow(client, data):

@@ -3,7 +3,7 @@ import pytest
 from flask import url_for
 
 from library.domain import Role
-from system.conftest import CSRF, login, post
+from helpers import CSRF, login, post
 
 PUBLIC = {"static", "auth.login", "auth.logout", "home"}
 
